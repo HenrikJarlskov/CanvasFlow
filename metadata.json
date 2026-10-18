@@ -1,0 +1,6 @@
+{
+  "name": "AIdboard",
+  "description": "Interactive vector whiteboard with real-time multi-user collaboration, shape snapping, text editing, OCR text recognition with Tesseract, and PDF/PNG export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

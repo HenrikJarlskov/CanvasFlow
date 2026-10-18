@@ -1,0 +1,198 @@
+{
+  "timestamp": "2026-10-18T09:51:19.204Z",
+  "filesAnalyzed": 99,
+  "totalLines": 21094,
+  "issues": [
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/App.tsx",
+      "message": "Large file (468 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/components/AiDrawModal.tsx",
+      "message": "Large file (336 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "high",
+      "file": "src/components/Canvas.tsx",
+      "message": "Monolithic file exceeds 500 lines (556 lines).",
+      "recommendation": "Split Canvas.tsx into smaller subcomponents and custom hooks. Target < 250 lines per component."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/components/Header.tsx",
+      "message": "Large file (382 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/components/HelpModal.tsx",
+      "message": "Large file (496 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "high",
+      "file": "src/components/ImportModal.tsx",
+      "message": "Monolithic file exceeds 500 lines (548 lines).",
+      "recommendation": "Split ImportModal.tsx into smaller subcomponents and custom hooks. Target < 250 lines per component."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/components/SelectionOverlay.tsx",
+      "message": "Large file (391 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/components/Toolbar.tsx",
+      "message": "Large file (400 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "high",
+      "file": "src/components/okf/OkfViewer.tsx",
+      "message": "Monolithic file exceeds 500 lines (762 lines).",
+      "recommendation": "Split OkfViewer.tsx into smaller subcomponents and custom hooks. Target < 250 lines per component."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "high",
+      "file": "src/hooks/useCanvasGestures.ts",
+      "message": "Monolithic file exceeds 500 lines (501 lines).",
+      "recommendation": "Split useCanvasGestures.ts into smaller subcomponents and custom hooks. Target < 250 lines per component."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/i18n/locales/da.ts",
+      "message": "Large file (380 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/i18n/locales/de.ts",
+      "message": "Large file (380 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/i18n/locales/en.ts",
+      "message": "Large file (380 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/i18n/locales/fr.ts",
+      "message": "Large file (380 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/server/security.ts",
+      "message": "Large file (319 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "high",
+      "file": "src/test/Canvas.test.tsx",
+      "message": "Monolithic file exceeds 500 lines (543 lines).",
+      "recommendation": "Split Canvas.test.tsx into smaller subcomponents and custom hooks. Target < 250 lines per component."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/test/PerformanceAndMaintainability.test.tsx",
+      "message": "Large file (356 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/utils/canvasGeometry.ts",
+      "message": "Large file (499 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "high",
+      "file": "src/utils/drawioParser.ts",
+      "message": "Monolithic file exceeds 500 lines (514 lines).",
+      "recommendation": "Split drawioParser.ts into smaller subcomponents and custom hooks. Target < 250 lines per component."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/utils/export.ts",
+      "message": "Large file (459 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/utils/sapIcons.ts",
+      "message": "Large file (439 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/utils/shapeDetection.ts",
+      "message": "Large file (439 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/utils/shortcuts.ts",
+      "message": "Large file (309 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "COMPLEXITY",
+      "severity": "medium",
+      "file": "src/utils/socket.ts",
+      "message": "Large file (364 lines).",
+      "recommendation": "Extract reusable view sub-components or utility functions to improve readability."
+    },
+    {
+      "type": "MODULARITY",
+      "severity": "medium",
+      "file": "src/components/Header.tsx",
+      "message": "Header contains inline menus (Export, Background, Title Form) making mobile responsiveness harder to maintain.",
+      "recommendation": "Extract ExportMenu, BackgroundMenu, and TitleEditor into standalone subcomponents and provide a MobileHeaderMenu drawer."
+    },
+    {
+      "type": "MODULARITY",
+      "severity": "high",
+      "file": "src/components/Toolbar.tsx",
+      "message": "Toolbar has 15 horizontal action items that overflow on mobile screens (< 768px).",
+      "recommendation": "Separate ZoomControls into standalone component and build responsive mobile bottom dock / compact drawer."
+    }
+  ],
+  "guidelines": [
+    "Rule 1: Single Responsibility Principle - Split files exceeding 300 lines into subcomponents and domain hooks.",
+    "Rule 2: Zero Duplicate Geometry - Centralize SVG path generation, bounding box checks, and hit-testing in src/utils/canvasGeometry.ts.",
+    "Rule 3: Clean State Segregation - Separate Canvas rendering logic from gesture/touch handling using custom hooks.",
+    "Rule 4: Mobile-First Responsive Design - Ensure toolbar and header gracefully adapt to screens from 320px to 4K, in both portrait and landscape.",
+    "Rule 5: Lighthouse 100 Standards - Accessible ARIA labels on all interactive elements, dynamic code-splitting for heavy dependencies, preconnects & theme-color.",
+    "Rule 6: Single Source of Truth for Keyboard Shortcuts - Handle all keyboard shortcuts in one centralized hook to avoid duplicate/conflicting listeners.",
+    "Rule 7: Crash-Proof Touch Support - Support multi-touch gestures (pinch-to-zoom, two-finger pan) with zero pointer conflicts."
+  ]
+}
