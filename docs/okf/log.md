@@ -7,6 +7,32 @@ This document maintains the operational change log, release milestones, incident
 
 ## 📜 1. Version Release History
 
+### Release v2.8.0 — Floating Toolbar Refactoring, Stacking Order Hardening & Header Dropdown Fixes
+- **Header Dropdown Stacking Context & Z-Index Resolution**:
+  - Elevated the main `<header>` container to `relative z-40`, ensuring all child popovers and dropdown menus (`BackgroundMenu`, `ExportMenu`, `LanguageMenu`, and `clear-confirm-dialog`) construct a stacking context that renders strictly above the floating canvas toolbar.
+  - Positioned the primary floating drawing toolbar at `z-20` (above the interactive canvas `z-0` and beneath header menus), completely resolving the UI obstruction anomaly where header menus opened behind toolbar tool buttons.
+  - Verified modal dialogs and drawers (`z-50`) and system notifications (`z-[60]`) continue to layer cleanly over both the header and toolbar.
+- **Select Shape Menu Reactivity & Popover Fix**:
+  - Hardened `ShapesMenuPopover` click interaction and state delegation, ensuring selecting any primitive (rectangle, circle, diamond, triangle, star, arrow) immediately activates the shape tool, updates the canvas active shape variant, and smoothly dismisses the popover.
+- **Compact Color Picker & Custom Palette Overhaul**:
+  - Deprecated the clumsy row of 5 fixed color swatches directly on the toolbar that made the bar unnecessarily long and rigid.
+  - Implemented a unified single-button active color preview indicator (`ColorPickerPopover`) that opens an interactive popover with both curated quick-pick color swatches and standard full-spectrum RGB/Hex picker controls.
+  - Integrated bidirectional color synchronization with selected canvas elements.
+- **Single-Icon Pen Stroke Width Selector**:
+  - Replaced the multi-button static thickness strip with a single responsive stroke width indicator button.
+  - Clicking the indicator displays the thickness menu popover with clear horizontal stroke weight bars and numeric gauge labels, keeping the primary toolbar clean and focused.
+- **Language Switcher Localization & Clarity**:
+  - Standardized the language menu display in `LanguageMenu.tsx` to display full descriptive endonyms and names (e.g. "Dansk (Danish)", "English", "Français", "Deutsch") rather than cryptic 2-letter codes ("DA").
+- **Non-Empty Whiteboard "New" Confirmation Guard (Save vs Discard)**:
+  - Added safety guard when creating a new board: if the active whiteboard is empty (`elements.length === 0`), clicking "New" creates a fresh board immediately without prompting.
+  - If the whiteboard contains drawings (`elements.length > 0`), opens an accessible confirmation modal dialog (`new-board-confirm-dialog`) with three clear options:
+    - **Save & New**: Immediately flushes and persists the current board (name, elements, timestamp) to the user's permanent Boards library (`savedBoards`, IndexedDB, and REST API) before creating the new whiteboard.
+    - **Discard**: Drops the uncommitted board from storage and transitions directly to a clean whiteboard.
+    - **Cancel**: Dismisses the modal and remains on the active whiteboard without modification.
+  - Implemented synchronously across desktop Header and touch Mobile Header Drawer with full i18n localization in English, French, German, and Danish.
+- **UI Deduplication & Toolbar Cleanup**:
+  - Removed duplicate "Import" and "AI Whiteboard Artist" action buttons from the drawing toolbar, leaving them logically organized in the top navigation header where global board actions belong.
+
 ### Release v2.7.0 — Performance, Multi-Tier Caching & Architecture Maintainability
 - **Suggestion 1: Shape Detection Caching (LRU 256) & Async Non-Blocking Execution**:
   - Implemented bounded 256-slot LRU in-memory cache in `src/utils/shapeDetection.ts`.
@@ -159,9 +185,29 @@ This document maintains the operational change log, release milestones, incident
   - Offscreen export avoids broken image renders and executes in parallel in sub-4ms.
   - All caches include bounded capacity limits and automated cleanup hooks (`clearShapeDetectionCache`, `clearSpatialBoundsCache`, `clearImageCache`) preventing memory leaks.
 
+### ADR-009: Stacking Context Hierarchy & Popover Z-Index Governance
+- **Status**: Accepted
+- **Context**: The whiteboard UI features multiple floating, positioned, and fixed overlays: the top navigation header bar (56px high), the floating primary drawing toolbar (fixed at `top-16 sm:top-18 left-1/2`), toolbar tool popovers (shapes, color palette, stroke width), header dropdowns (background grid menu, export format options, language selector, clear confirmation dialog), floating selection actions, and full-screen modal overlays (import hub, AI artist, boards manager, share). When header dropdowns were triggered, their menus visually opened behind the primary toolbar due to the toolbar's higher stacking context (`z-40` vs header `z-30`), rendering menu items unclickable.
+- **Decision**: Establish an authoritative, project-wide CSS stacking hierarchy:
+  1. **Base Interactive Canvas**: `z-0` (SVG elements layer, gestures layer, background patterns).
+  2. **Canvas Selection & In-Canvas Transform Overlays**: `z-30` (selection bounding boxes, transform handles, inline text editor).
+  3. **Primary Floating Drawing Toolbar**: `z-20` (fixed center viewport below header, tool popovers dropping downward into canvas area).
+  4. **Top Navigation Header & Dropdown Popovers**: `relative z-40` (header background menus, export options, language selector, clear-board dialog drop downwards and float in front of the toolbar).
+  5. **Application Modal Dialogs & Mobile Slide-Out Drawers**: `fixed inset-0 z-50` (Import hub, AI artist, Share modal, Boards library, OCR modal, mobile drawer, dim backdrop overlays).
+  6. **Ephemeral System Notifications & Toasts**: `z-[60]` (shape snapping feedback, connection toasts).
+- **Rationale**:
+  - Eliminates visual overlap clipping where header dropdowns open behind the drawing toolbar.
+  - Keeps toolbar popovers visible above canvas elements.
+  - Ensures modal dialogs and alert dialogs maintain complete dominance over all underlying controls.
+
 ---
 
 ## 🔍 3. Incident Post-Mortems & Resolved Anomalies
+
+### Incident INC-2026-10-21: Header Dropdown Menus Obstructed Behind Floating Drawing Toolbar
+- **Summary**: Clicking header action dropdowns (Background grid texture selector, Export format menu, Language options, Clear board confirmation dialog) opened the options list behind the floating drawing toolbar, preventing users from selecting menu items.
+- **Root Cause**: The `<header>` element was configured with `z-30` while the `<Toolbar>` element had `fixed ... z-40`. Because `<header>` had a lower stacking level than the toolbar, all child absolute popovers (`z-50` within the header context) were constrained to the header's effective stacking layer of 30, causing them to render visually beneath the toolbar at layer 40.
+- **Resolution**: Updated `<header>` to `relative z-40` and the primary floating toolbar to `z-20`. Verified that header dropdowns now open smoothly in front of the toolbar, fully interactive on all desktop, tablet, and mobile viewports.
 
 ### Incident INC-2026-10-09: Regex Backtracking on Self-Closing `<mxCell/>` Tags
 - **Summary**: When parsing `<mxGraphModel>` containing self-closing cells (`<mxCell id="0"/>`), greedy regex matching combined self-closing tags with subsequent cells, dropping geometric vertices from parsed output.

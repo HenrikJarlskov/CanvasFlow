@@ -69,13 +69,13 @@ describe('Import and Real-Time Cursor Collaboration End-to-End', () => {
     expect(images.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('opens Import modal from Toolbar, loads draw.io format library, and imports items to canvas', async () => {
+  it('opens Import modal from Header, loads draw.io format library, and imports items to canvas', async () => {
     render(<App />);
 
-    // 1. Click Import button on Toolbar
-    const toolImportBtn = screen.getByTestId('tool-import');
-    expect(toolImportBtn).toBeInTheDocument();
-    fireEvent.click(toolImportBtn);
+    // 1. Click Import button on Header
+    const headerImportBtn = screen.getByTestId('btn-header-import');
+    expect(headerImportBtn).toBeInTheDocument();
+    fireEvent.click(headerImportBtn);
 
     expect(screen.getByTestId('import-modal')).toBeInTheDocument();
 

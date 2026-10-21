@@ -145,7 +145,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         data-testid="primary-toolbar"
         role="toolbar"
         aria-label="Drawing tools toolbar"
-        className="fixed top-16 sm:top-18 left-1/2 -translate-x-1/2 z-40 max-w-[calc(100vw-1rem)] overflow-x-auto no-scrollbar scrollbar-none bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-slate-200/90 dark:border-zinc-800 rounded-2xl shadow-xl p-1 sm:p-1.5 flex items-center gap-0.5 sm:gap-1 select-none"
+        className="fixed top-16 sm:top-18 left-1/2 -translate-x-1/2 z-20 max-w-[calc(100vw-1rem)] overflow-visible bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-slate-200/90 dark:border-zinc-800 rounded-2xl shadow-xl p-1 sm:p-1.5 flex items-center gap-0.5 sm:gap-1 select-none"
       >
         {/* Select / Move */}
         <button

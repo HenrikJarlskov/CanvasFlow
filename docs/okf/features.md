@@ -193,3 +193,40 @@ To maximize perceived speed, eliminate main-thread event loop stutter, and adher
 ### 9.5 Clean Domain Orchestration & Modular View Separation
 - **`useBoardOrchestration` Hook (`src/hooks/useBoardOrchestration.ts`)**: Encapsulates board naming, URL room synchronization, JSON import/export, and image file loading. Drops `src/App.tsx` from 468 lines down to a clean coordinator.
 - **`WhiteboardNotifications` Component (`src/components/WhiteboardNotifications.tsx`)**: Decouples snap toasts and AI generation progress badges from the root component tree.
+
+---
+
+## 🛠️ 10. Toolbar Ergonomics, Popovers & Stacking Hierarchy (v2.8.0)
+
+### 10.1 Reactive Shape Primitive Selector (`ShapesMenuPopover`)
+- **Direct Interactive Switcher**: Replaces static tools with an intuitive shape picker button and dropdown popover (`data-testid="tool-shape"` and `data-testid="shapes-menu-popover"`).
+- **Geometric Primitives**: Provides one-click activation for Rectangle, Circle, Diamond, Triangle, Star, and Arrow.
+- **State Coupling**: Selecting any variant immediately sets `currentTool = 'shape'`, updates `selectedShape`, highlights the active shape icon, and cleanly closes the popover without event collisions.
+
+### 10.2 Streamlined Color Picker Popover (`ColorPickerPopover`)
+- **Single-Indicator Palette Button**: Deprecated the clumsy row of 5 fixed color circles directly on the toolbar, reclaiming over 160px of horizontal space.
+- **Dynamic Active Preview**: A single rounded color swatch (`data-testid="active-color-swatch"`) displays the currently active stroke color with high-contrast ring styling.
+- **Full-Spectrum & Quick Swatches**: Clicking the color indicator opens an interactive popover featuring:
+  - Top curated quick-pick color swatches (`Dark #18181b`, `Blue #2563eb`, `Emerald #059669`, `Red #dc2626`, `Amber #d97706`, `Violet #7c3aed`, `Pink #db2777`).
+  - Standard HTML5 native color input (`data-testid="custom-color-input"`) with real-time hex value display and validation.
+- **Selection Synchronization**: Modifying the color in the toolbar automatically applies the selected color to all currently selected canvas elements in real-time.
+
+### 10.3 Single-Icon Pen Stroke Width Selector (`StrokeWidthSelector`)
+- **Adaptive Single-Icon Gauge**: Replaced static multi-button width selectors with a single dynamic pen thickness button displaying the current stroke width (`data-testid="tool-stroke-width"`).
+- **Horizontal Stroke Bars**: The popover dropdown (`data-testid="stroke-width-menu"`) presents clear horizontal stroke weight bars rather than round dots (avoiding visual confusion with color swatches), labeled with localized size descriptions (Thin 2px, Medium 4px, Bold 8px, Extra 16px).
+
+### 10.4 CSS Stacking Order Governance & Header Popover Clearance
+- **Header Stacking Level**: The navigation `<header>` element is assigned `relative z-40`, creating an isolated stacking context higher than the floating toolbar.
+- **Floating Toolbar Stacking Level**: The primary floating toolbar (`data-testid="primary-toolbar"`) is assigned `z-20` (fixed center viewport).
+- **Unobstructed Dropdown Interactions**: All header menus (`BackgroundMenu`, `ExportMenu`, `LanguageMenu`, and `clear-confirm-dialog`) drop downwards unobstructed over the toolbar, eliminating all click-blocking or occlusion anomalies.
+- **Modal Dominance**: Fullscreen modal dialogs (`ImportModal`, `AiDrawModal`, `BoardsModal`, `ShareModal`, `HelpModal`) and mobile slide-out drawers remain at `z-50`, with toast notifications at `z-[60]`.
+
+### 10.5 Non-Empty Board "New" Confirmation Guard
+- **Zero-Accidental-Loss Guard**: Prevents accidental data destruction when clicking "New" on an active whiteboard.
+- **Empty Canvas Fast-Path**: If `elements.length === 0`, `onNewBoard()` is invoked immediately without confirmation.
+- **Non-Empty Canvas Confirmation Modal**: If `elements.length > 0`, renders `new-board-confirm-dialog` presenting:
+  - **Save & New**: Synchronously flushes the active board elements to IndexedDB, localStorage (`aidboard_saved_boards`), and the backend REST API before creating the new whiteboard.
+  - **Discard**: Discards uncommitted board drawings from storage and navigates to the new whiteboard.
+  - **Cancel**: Closes the dialog and retains the existing canvas state without loss.
+
+

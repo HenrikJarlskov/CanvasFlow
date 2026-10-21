@@ -15,7 +15,7 @@ The OKF bundle consists of four core operational modules plus this master index:
 | **02. Features Deep-Dive** | [`docs/okf/features.md`](./features.md) | Engineers, Architects, PMs | Deep-dive functional and technical specification: vector engine, toolbar grid lines toggle, i18n multi-language engine (EN/FR/DE/DA), shape detection, multi-content Import (SAP Icons & Draw.io), real-time collaborator cursors, OCR, AI artist, and responsive layouts |
 | **03. Deployment & Security** | [`docs/okf/deployment.md`](./deployment.md) | DevOps, SRE, SecOps | Pre-requisites, deployment strategies (Docker, Cloud Run, Kubernetes, Node.js systemd), security hardening, CSP, WebSocket security, and operational runbooks |
 | **04. Testing, Performance & Scalability** | [`docs/okf/testing.md`](./testing.md) | QA, DevOps, Performance Engineers | 40 test suites (257 tests, >90% coverage), E2E workflows, empirical HTTP performance benchmarks, real-time WebSocket scalability stress tests (60+ concurrent clients, <3ms broadcast latency), geometry math throughput, and multi-tier caching benchmarks |
-| **05. Operational Log & ADRs** | [`docs/okf/log.md`](./log.md) | Architects, Tech Leads, SRE | Version release history (v1.0.0 through v2.7.0), formal ADRs (ADR-001 through ADR-008), operational audit history, and incident post-mortems |
+| **05. Operational Log & ADRs** | [`docs/okf/log.md`](./log.md) | Architects, Tech Leads, SRE | Version release history (v1.0.0 through v2.8.0), formal ADRs (ADR-001 through ADR-009), operational audit history, and incident post-mortems |
 | **06. Review & Improvements** | [`docs/okf/improvements.md`](./improvements.md) | Architects, SecOps, Lead Engineers | Full-stack engineering, architectural & security review: findings sorted by impact, attack vectors, and 3-phase remediation roadmap |
 
 ---
@@ -57,6 +57,7 @@ The OKF bundle consists of four core operational modules plus this master index:
                              - Real-Time Collaborator Cursors
                              - Client Tesseract.js Worker
                              - Responsive Layouts (Mobile/Desktop)
+                             - Z-Index Stacking Hierarchy Governance
 ```
 
 ---
@@ -72,7 +73,7 @@ The OKF bundle consists of four core operational modules plus this master index:
 - **Internationalization (i18n)**: i18next & react-i18next with 4 supported locales (English, French, German, Danish), 295+ keys with 100% translatable zero-hardcoded string coverage
 - **Workspace Canvas Control**: Floating toolbar toggle between clean workspace (`blank`) and grid-assisted workspace (`grid`/`dots`/`blueprint`/`dark`)
 - **High-Performance Caching & Spatial Indexing**: Multi-tier in-memory ARC caches: LRU shape detection cache (256 entries), spatial bounds cache with $O(1)$ AABB fast rejection, preloaded export image cache, and async non-blocking execution
-- **Testing Framework**: Vitest 5.0, JSDOM 30.1, React Testing Library 16.3 (257 automated tests across 40 suites)
+- **Testing Framework**: Vitest 5.0, JSDOM 30.1, React Testing Library 16.3 (262 automated tests across 41 suites)
 - **Static Code Analysis**: Custom `fallow.js` architectural complexity and anti-duplication engine
 
 ---

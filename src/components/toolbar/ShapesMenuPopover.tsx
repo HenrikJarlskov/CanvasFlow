@@ -80,9 +80,9 @@ export const ShapesMenuPopover: React.FC<ShapesMenuPopoverProps> = ({
         aria-expanded={showShapeMenu}
         onClick={() => {
           onActivate();
-          setShowShapeMenu(!showShapeMenu);
+          setShowShapeMenu((prev) => !prev);
         }}
-        className={`p-2.5 rounded-xl transition-all cursor-pointer flex items-center gap-0.5 ${
+        className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer min-w-8 min-h-8 sm:min-w-9 sm:min-h-9 flex items-center justify-center gap-0.5 ${
           isActive
             ? 'bg-indigo-600 text-white shadow-xs'
             : 'text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800'

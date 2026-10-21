@@ -72,6 +72,12 @@ interface HeaderProps {
   onImportImageFile?: (file: File) => void;
   /** Open keyboard shortcuts and user guide modal */
   onOpenHelpModal?: () => void;
+  /** Whether the active whiteboard contains any elements */
+  hasElements?: boolean;
+  /** Callback fired when user chooses to save the current board and proceed with a new one */
+  onSaveBoardAndNew?: () => void;
+  /** Callback fired when user chooses to discard changes and proceed with a new one */
+  onDiscardAndNew?: () => void;
 }
 
 /**
@@ -98,11 +104,23 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenImportModal,
   onImportImageFile,
   onOpenHelpModal,
+  hasElements = false,
+  onSaveBoardAndNew,
+  onDiscardAndNew,
 }) => {
   const { t } = useTranslation();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showNewBoardConfirm, setShowNewBoardConfirm] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleNewBoardClick = () => {
+    if (hasElements) {
+      setShowNewBoardConfirm(true);
+    } else {
+      onNewBoard();
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -125,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
       <header
         data-testid="app-header"
         role="banner"
-        className="h-14 border-b border-slate-200/80 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between z-30 select-none shadow-xs text-slate-800 dark:text-zinc-100 shrink-0"
+        className="h-14 border-b border-slate-200/80 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between relative z-40 select-none shadow-xs text-slate-800 dark:text-zinc-100 shrink-0"
       >
         {/* Hidden image input for header import button */}
         <input
@@ -172,7 +190,7 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             data-testid="btn-new-board"
             aria-label={t('header.newBoardTitle')}
-            onClick={onNewBoard}
+            onClick={handleNewBoardClick}
             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
             title={t('header.newBoardTitle')}
           >
@@ -366,7 +384,7 @@ export const Header: React.FC<HeaderProps> = ({
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onOpenBoardsModal={onOpenBoardsModal}
-        onNewBoard={onNewBoard}
+        onNewBoard={handleNewBoardClick}
         onOpenClearConfirm={() => setShowClearConfirm(true)}
         onImportPictureClick={handleTriggerImport}
         onOpenAiDraw={onOpenAiDraw}
@@ -375,6 +393,74 @@ export const Header: React.FC<HeaderProps> = ({
         onOpenShareModal={onOpenShareModal}
         onOpenHelpModal={onOpenHelpModal}
       />
+
+      {/* New Board Confirmation Dialog when canvas is not empty */}
+      {showNewBoardConfirm && (
+        <div
+          data-testid="new-board-confirm-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-board-confirm-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150"
+        >
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-5 sm:p-6 max-w-md w-full animate-in zoom-in-95 duration-150">
+            <div className="flex items-start gap-3.5 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <Plus className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 id="new-board-confirm-title" className="text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100">
+                  {t('header.newBoardConfirmTitle')}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-1">
+                  {t('header.newBoardConfirmMessage')}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-zinc-800">
+              <button
+                type="button"
+                data-testid="btn-cancel-new-board"
+                onClick={() => setShowNewBoardConfirm(false)}
+                className="px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer text-center"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                data-testid="btn-discard-new-board"
+                onClick={() => {
+                  setShowNewBoardConfirm(false);
+                  if (onDiscardAndNew) {
+                    onDiscardAndNew();
+                  } else {
+                    onNewBoard();
+                  }
+                }}
+                className="px-3.5 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl transition-colors cursor-pointer text-center"
+              >
+                {t('common.discard')}
+              </button>
+              <button
+                type="button"
+                data-testid="btn-save-new-board"
+                onClick={() => {
+                  setShowNewBoardConfirm(false);
+                  if (onSaveBoardAndNew) {
+                    onSaveBoardAndNew();
+                  } else {
+                    onNewBoard();
+                  }
+                }}
+                className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-colors cursor-pointer text-center"
+              >
+                {t('common.saveAndNew')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -9,14 +9,15 @@ import { da } from './locales/da';
 export interface LanguageOption {
   code: 'en' | 'fr' | 'de' | 'da';
   label: string;
+  name: string;
   flag: string;
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'da', label: 'Dansk', flag: '🇩🇰' },
+  { code: 'en', label: 'English', name: 'English', flag: '🇬🇧' },
+  { code: 'fr', label: 'Français', name: 'Français', flag: '🇫🇷' },
+  { code: 'de', label: 'Deutsch', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'da', label: 'Dansk', name: 'Danish', flag: '🇩🇰' },
 ];
 
 export const resources = {

@@ -469,9 +469,16 @@ curl -I http://localhost:3000/`}
 
             <div className="space-y-3 text-xs">
               <div className="p-2.5 rounded-lg bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800">
-                <div className="font-semibold text-indigo-700 dark:text-indigo-300">Release v2.7.0 Milestone (Latest)</div>
+                <div className="font-semibold text-indigo-700 dark:text-indigo-300">Release v2.8.0 Milestone (Latest)</div>
                 <p className="text-slate-600 dark:text-zinc-300 mt-1">
-                  Multi-tier in-memory ARC caching (LRU shape detection, spatial bounding boxes with O(1) AABB fast-rejection, async image export preloading), structuredClone duplication, and domain orchestration hook. 257 automated tests across 40 suites.
+                  Stacking context hierarchy (ADR-009) resolving header dropdown visibility over toolbar (Header relative z-40 vs Toolbar z-20). Streamlined single-indicator color picker popover, dynamic single-icon pen stroke width selector, reactive shape primitives dropdown, and full language name labels. 262 automated tests across 41 suites.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">Release v2.7.0 Milestone</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  Multi-tier in-memory ARC caching (LRU shape detection, spatial bounding boxes with O(1) AABB fast-rejection, async image export preloading), structuredClone duplication, and domain orchestration hook.
                 </p>
               </div>
 
@@ -514,6 +521,20 @@ curl -I http://localhost:3000/`}
                 <div className="font-semibold text-indigo-600 dark:text-indigo-400">ADR-007: Toolbar Grid Toggle UX State Pattern</div>
                 <p className="text-slate-600 dark:text-zinc-300 mt-1">
                   Direct floating toolbar toggle switching between clean canvas (blank) and grid-assisted workspace without discarding user texture preferences.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">ADR-008: Multi-Tiered In-Memory Caching & AABB Spatial Indexing</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  256-entry LRU shape cache, AABB spatial fast rejection accelerating hit-testing by 28x, and async offscreen image preloading.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">ADR-009: Stacking Context Hierarchy & Popover Z-Index Governance</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  Established definitive z-index layers: Canvas (z-0), Toolbar (z-20), Header & Dropdown Popovers (relative z-40), Modals & Drawers (z-50), and Notifications (z-[60]). Ensures all header dropdowns float above the toolbar without obstruction.
                 </p>
               </div>
             </div>

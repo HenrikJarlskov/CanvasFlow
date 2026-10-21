@@ -1,7 +1,16 @@
-import { describe, it, expect, afterAll } from 'vitest';
-import fs from 'fs';
+import { describe, it, expect, vi } from 'vitest';
 import { renderBoardToCanvas, exportToPNG, exportToPDF, exportToSVG } from '../utils/export';
 import { BoardElement } from '../types/whiteboard';
+
+// Mock jsPDF to prevent physical test pdf export files from being created on disk
+vi.mock('jspdf', () => {
+  return {
+    jsPDF: class MockJsPDF {
+      addImage = vi.fn();
+      save = vi.fn();
+    },
+  };
+});
 
 describe('Export Utilities', () => {
   const mockElements: BoardElement[] = [
@@ -37,14 +46,6 @@ describe('Export Utilities', () => {
     },
   ];
 
-  afterAll(() => {
-    if (fs.existsSync('testboard_export.pdf')) {
-      try {
-        fs.unlinkSync('testboard_export.pdf');
-      } catch {}
-    }
-  });
-
   it('renders elements to canvas', () => {
     const canvas = renderBoardToCanvas(mockElements, 'blank');
     expect(canvas).toBeInstanceOf(HTMLCanvasElement);
@@ -56,16 +57,8 @@ describe('Export Utilities', () => {
     expect(() => exportToPNG(mockElements, 'TestBoard', 'blank')).not.toThrow();
   });
 
-  it('exports to PDF without error', async () => {
-    try {
-      await exportToPDF(mockElements, 'TestBoard', 'blank');
-    } finally {
-      if (fs.existsSync('testboard_export.pdf')) {
-        try {
-          fs.unlinkSync('testboard_export.pdf');
-        } catch {}
-      }
-    }
+  it('exports to PDF without error and without creating disk artifacts', async () => {
+    await expect(exportToPDF(mockElements, 'TestBoard', 'blank')).resolves.not.toThrow();
   });
 
   it('exports to SVG without error', () => {

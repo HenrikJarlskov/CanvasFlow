@@ -142,7 +142,7 @@ describe('Toolbar Component', () => {
     expect(screen.getByTestId('color-picker-popover')).toBeInTheDocument();
 
     // Select a color swatch (e.g. blue)
-    const blueColor = COLOR_PALETTE.find((c) => c.name === 'Blue')?.hex || '#2563eb';
+    const blueColor = COLOR_PALETTE.find((c) => c.name === 'Blue')?.hex || '#3b82f6';
     fireEvent.click(screen.getByTestId(`color-swatch-${blueColor}`));
     expect(onChangeColor).toHaveBeenCalledWith(blueColor);
 
@@ -153,11 +153,15 @@ describe('Toolbar Component', () => {
     expect(onChangeColor).toHaveBeenCalledWith('#ff00aa');
   });
 
-  it('selects stroke widths (Fine 2, Medium 4, Thick 8, Chunky 16)', () => {
+  it('selects stroke widths from dropdown popover (Fine 2, Medium 4, Thick 8, Chunky 16)', () => {
     const onChangeStrokeWidth = vi.fn();
     render(<Toolbar {...defaultProps} onChangeStrokeWidth={onChangeStrokeWidth} />);
 
     for (const sw of STROKE_WIDTHS) {
+      // Click trigger to open dropdown
+      fireEvent.click(screen.getByTestId('stroke-width-btn'));
+      expect(screen.getByTestId('stroke-width-popover')).toBeInTheDocument();
+
       fireEvent.click(screen.getByTestId(`stroke-width-${sw.value}`));
       expect(onChangeStrokeWidth).toHaveBeenCalledWith(sw.value);
     }

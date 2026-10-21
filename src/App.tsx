@@ -112,6 +112,59 @@ export default function App() {
     [pushHistory, saveBoard, setElements]
   );
 
+  const handleChangeColor = useCallback(
+    (newColor: string) => {
+      setColor(newColor);
+      if (selectedIds.length > 0) {
+        const updated = elements.map((el) => {
+          if (selectedIds.includes(el.id)) {
+            return {
+              ...el,
+              color: newColor,
+              updatedAt: Date.now(),
+            };
+          }
+          return el;
+        });
+        handleElementsChange(updated, 'update_color');
+      }
+    },
+    [elements, selectedIds, handleElementsChange]
+  );
+
+  const handleChangeStrokeWidth = useCallback(
+    (newWidth: number) => {
+      setStrokeWidth(newWidth);
+      if (selectedIds.length > 0) {
+        const updated = elements.map((el) => {
+          if (selectedIds.includes(el.id)) {
+            return {
+              ...el,
+              strokeWidth: newWidth,
+              updatedAt: Date.now(),
+            };
+          }
+          return el;
+        });
+        handleElementsChange(updated, 'update_stroke_width');
+      }
+    },
+    [elements, selectedIds, handleElementsChange]
+  );
+
+  // Sync toolbar active color and stroke width with selected element
+  useEffect(() => {
+    if (selectedIds.length === 1) {
+      const selectedEl = elements.find((el) => el.id === selectedIds[0]);
+      if (selectedEl && 'color' in selectedEl && typeof (selectedEl as any).color === 'string') {
+        setColor((selectedEl as any).color);
+      }
+      if (selectedEl && 'strokeWidth' in selectedEl && typeof (selectedEl as any).strokeWidth === 'number') {
+        setStrokeWidth((selectedEl as any).strokeWidth);
+      }
+    }
+  }, [selectedIds, elements]);
+
   const handleElementsLiveUpdate = useCallback((liveElements: BoardElement[]) => {
     const cloned = cloneElements(liveElements);
     setElements(cloned);
@@ -140,6 +193,16 @@ export default function App() {
     pan,
     zoom,
   });
+
+  const handleSaveBoardAndNew = useCallback(() => {
+    saveBoard(elements, boardName, true);
+    handleNewBoard();
+  }, [elements, boardName, saveBoard, handleNewBoard]);
+
+  const handleDiscardAndNew = useCallback(() => {
+    deleteBoard(roomId);
+    handleNewBoard();
+  }, [deleteBoard, roomId, handleNewBoard]);
 
   // Undo / Redo
   const handleUndo = useCallback(() => {
@@ -335,6 +398,9 @@ export default function App() {
           if (bg !== 'blank') setLastActiveGrid(bg);
         }}
         onNewBoard={handleNewBoard}
+        hasElements={elements.length > 0}
+        onSaveBoardAndNew={handleSaveBoardAndNew}
+        onDiscardAndNew={handleDiscardAndNew}
         onOpenBoardsModal={() => setIsBoardsModalOpen(true)}
         onClearBoard={handleClearBoard}
         onExportPNG={() => exportToPNG(elements, boardName, background)}
@@ -358,9 +424,9 @@ export default function App() {
         selectedShape={selectedShape}
         onSelectShape={setSelectedShape}
         color={color}
-        onChangeColor={setColor}
+        onChangeColor={handleChangeColor}
         strokeWidth={strokeWidth}
-        onChangeStrokeWidth={setStrokeWidth}
+        onChangeStrokeWidth={handleChangeStrokeWidth}
         autoSnap={autoSnap}
         onToggleAutoSnap={() => setAutoSnap(!autoSnap)}
         background={background}
@@ -376,9 +442,6 @@ export default function App() {
           setZoom(1);
           setPan({ x: 0, y: 0 });
         }}
-        onOpenAiDraw={() => setIsAiDrawOpen(true)}
-        onOpenImportModal={() => setIsImportModalOpen(true)}
-        onImportImageFile={handleImportImageFile}
       />
 
       <Canvas

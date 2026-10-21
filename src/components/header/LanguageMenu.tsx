@@ -48,8 +48,8 @@ export const LanguageMenu: React.FC<LanguageMenuProps> = ({ isMobileDrawer = fal
             <Globe className="w-4 h-4 text-indigo-500" />
             <span>{t('header.language')}</span>
           </div>
-          <span className="text-[11px] font-mono font-medium text-slate-500 dark:text-zinc-400">
-            {currentLang.flag} {currentLang.label}
+          <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+            {currentLang.flag} {currentLang.name || currentLang.label}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
@@ -69,7 +69,7 @@ export const LanguageMenu: React.FC<LanguageMenuProps> = ({ isMobileDrawer = fal
               >
                 <span className="flex items-center gap-1.5 truncate">
                   <span>{lang.flag}</span>
-                  <span className="truncate">{lang.label}</span>
+                  <span className="truncate">{lang.name || lang.label}</span>
                 </span>
                 {isSelected && <Check className="w-3 h-3 text-white shrink-0 ml-1" />}
               </button>
@@ -88,12 +88,12 @@ export const LanguageMenu: React.FC<LanguageMenuProps> = ({ isMobileDrawer = fal
         aria-label={t('header.selectLanguage')}
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
         title={t('header.language')}
       >
         <Globe className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
-        <span className="text-[11px] font-semibold tracking-wide uppercase">
-          {currentLang.code}
+        <span className="text-xs font-medium tracking-normal" data-testid="selected-language-name">
+          {currentLang.name || currentLang.label}
         </span>
         <ChevronDown className="w-3 h-3 text-slate-400" />
       </button>
@@ -102,7 +102,7 @@ export const LanguageMenu: React.FC<LanguageMenuProps> = ({ isMobileDrawer = fal
         <div
           data-testid="language-options-menu"
           role="menu"
-          className="absolute top-full right-0 mt-1.5 w-40 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100"
+          className="absolute top-full right-0 mt-1.5 w-44 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100"
         >
           {SUPPORTED_LANGUAGES.map((lang) => {
             const isSelected = currentLang.code === lang.code;
@@ -121,7 +121,7 @@ export const LanguageMenu: React.FC<LanguageMenuProps> = ({ isMobileDrawer = fal
               >
                 <span className="flex items-center gap-2">
                   <span>{lang.flag}</span>
-                  <span>{lang.label}</span>
+                  <span>{lang.label}{lang.name !== lang.label ? ` (${lang.name})` : ''}</span>
                 </span>
                 {isSelected && <Check className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />}
               </button>

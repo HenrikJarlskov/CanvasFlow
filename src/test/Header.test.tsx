@@ -229,4 +229,52 @@ describe('Header Component', () => {
     fireEvent.click(screen.getByTestId('btn-mobile-menu-toggle'));
     fireEvent.click(screen.getByTestId('mobile-btn-import'));
   });
+
+  it('prompts confirmation when clicking New with non-empty whiteboard and allows save or discard', () => {
+    const onNewBoard = vi.fn();
+    const onSaveBoardAndNew = vi.fn();
+    const onDiscardAndNew = vi.fn();
+
+    const { rerender } = render(
+      <Header
+        {...defaultProps}
+        hasElements={true}
+        onNewBoard={onNewBoard}
+        onSaveBoardAndNew={onSaveBoardAndNew}
+        onDiscardAndNew={onDiscardAndNew}
+      />
+    );
+
+    // 1. Click New - should open confirmation dialog, NOT immediately create new
+    fireEvent.click(screen.getByTestId('btn-new-board'));
+    expect(screen.getByTestId('new-board-confirm-dialog')).toBeInTheDocument();
+    expect(onNewBoard).not.toHaveBeenCalled();
+
+    // 2. Click Cancel - should close dialog without action
+    fireEvent.click(screen.getByTestId('btn-cancel-new-board'));
+    expect(screen.queryByTestId('new-board-confirm-dialog')).not.toBeInTheDocument();
+    expect(onSaveBoardAndNew).not.toHaveBeenCalled();
+    expect(onDiscardAndNew).not.toHaveBeenCalled();
+
+    // 3. Re-open and click Discard
+    fireEvent.click(screen.getByTestId('btn-new-board'));
+    fireEvent.click(screen.getByTestId('btn-discard-new-board'));
+    expect(onDiscardAndNew).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('new-board-confirm-dialog')).not.toBeInTheDocument();
+
+    // 4. Re-open and click Save
+    rerender(
+      <Header
+        {...defaultProps}
+        hasElements={true}
+        onNewBoard={onNewBoard}
+        onSaveBoardAndNew={onSaveBoardAndNew}
+        onDiscardAndNew={onDiscardAndNew}
+      />
+    );
+    fireEvent.click(screen.getByTestId('btn-new-board'));
+    fireEvent.click(screen.getByTestId('btn-save-new-board'));
+    expect(onSaveBoardAndNew).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('new-board-confirm-dialog')).not.toBeInTheDocument();
+  });
 });
