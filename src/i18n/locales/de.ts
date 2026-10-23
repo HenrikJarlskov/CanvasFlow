@@ -108,6 +108,9 @@ export const de = {
     undoAria: 'Letzte Aktion rückgängig machen',
     redo: 'Wiederholen (Strg+Y)',
     redoAria: 'Letzte Aktion wiederholen',
+    moreTools: 'Weitere Werkzeuge',
+    moreToolsTitle: 'Zusätzliche Werkzeuge und Einstellungen öffnen',
+    quickSettings: 'Werkzeuge & Einstellungen',
     shapes: {
       menuTitle: 'Geometrische Formen (Rechteck, Kreis, Dreieck, Linie, Pfeil)',
       menuAria: 'Formen-Menü, aktuell: {{shape}}',

@@ -1,14 +1,16 @@
 /**
  * @file useBoardStorage.ts
  * @description React hook for board persistence, metadata tracking, and workspace synchronization.
- * Integrates high-capacity IndexedDB for element serialization with server-side SQLite room listings
- * and localStorage catalog synchronization, debounced to avoid main-thread UI locks.
+ * Integrates Firebase Firestore with strict per-user data isolation under /users/{userId}/boards/{boardId},
+ * backed by high-capacity IndexedDB for client-side offline and debounced caching.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { User } from 'firebase/auth';
 import { BoardElement, BoardMetadata } from '../types/whiteboard';
 import { cloneElements } from '../utils/canvasGeometry';
 import { setBoardStorage, deleteBoardStorage } from '../utils/idbStorage';
+import { getUserBoards, saveUserBoard, deleteUserBoard } from '../services/boardService';
 
 /** Debounce latency in milliseconds to prevent storage IO thrashing during continuous drawing */
 const SAVE_DEBOUNCE_MS = 350;
@@ -19,29 +21,49 @@ const SAVE_DEBOUNCE_MS = 350;
  * @param roomId Current active board/room UUID
  * @param boardName Current board human-readable title
  * @param elementCount Current number of elements on canvas
+ * @param user Authenticated Firebase user, or null if guest
+ * @param background Active canvas background pattern (e.g. 'dots', 'grid')
  * @returns Object providing `savedBoards`, `saveBoard`, `deleteBoard`, `flushPendingSave`, and `loadSavedBoards`
  */
-export function useBoardStorage(roomId: string, boardName: string, elementCount: number) {
+export function useBoardStorage(
+  roomId: string,
+  boardName: string,
+  elementCount: number,
+  user: User | null = null,
+  background = 'dots'
+) {
   const [savedBoards, setSavedBoards] = useState<BoardMetadata[]>([]);
+  const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(false);
   const saveTimerRef = useRef<any>(null);
   const pendingDataRef = useRef<{ elements: BoardElement[]; name: string } | null>(null);
 
+  const getStorageKey = useCallback(() => {
+    return user ? `aidboard_boards_${user.uid}` : 'aidboard_guest_boards';
+  }, [user]);
+
   const loadSavedBoards = useCallback(async () => {
+    setIsLoadingBoards(true);
     try {
-      const local = localStorage.getItem('aidboard_saved_boards');
+      const storageKey = getStorageKey();
+      const local = localStorage.getItem(storageKey);
       let localList: BoardMetadata[] = local ? JSON.parse(local) : [];
 
-      const res = await fetch('/api/boards');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.boards && Array.isArray(data.boards)) {
-          const map = new Map<string, BoardMetadata>();
-          for (const b of localList) map.set(b.id, b);
-          for (const b of data.boards) map.set(b.id, b);
-          localList = Array.from(map.values());
+      if (user) {
+        // Fetch strictly isolated cloud boards belonging to this authenticated user
+        try {
+          const cloudBoards = await getUserBoards(user.uid);
+          if (cloudBoards && Array.isArray(cloudBoards)) {
+            const map = new Map<string, BoardMetadata>();
+            for (const b of localList) map.set(b.id, b);
+            for (const b of cloudBoards) map.set(b.id, b);
+            localList = Array.from(map.values());
+          }
+        } catch (cloudErr) {
+          console.warn('Could not load cloud boards:', cloudErr);
         }
       }
 
+      // Ensure the current active board is always represented in the user's workspace
       if (!localList.some((b) => b.id === roomId)) {
         localList.unshift({
           id: roomId,
@@ -51,22 +73,28 @@ export function useBoardStorage(roomId: string, boardName: string, elementCount:
         });
       }
 
+      localList.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
       setSavedBoards(localList);
-      localStorage.setItem('aidboard_saved_boards', JSON.stringify(localList));
+      localStorage.setItem(storageKey, JSON.stringify(localList));
     } catch (e) {
       console.warn('Could not load boards:', e);
+    } finally {
+      setIsLoadingBoards(false);
     }
-  }, [roomId, boardName, elementCount]);
+  }, [user, getStorageKey, roomId, boardName, elementCount]);
 
   /**
-   * Internal routine executing physical IndexedDB persistence, metadata update, and REST sync.
+   * Internal routine executing physical persistence to user-isolated Firestore and IndexedDB.
    */
   const executeSave = useCallback(
     async (safeElems: BoardElement[], name: string) => {
       try {
+        // 1. Local high-speed caching in IndexedDB
         await setBoardStorage(roomId, { name, elements: safeElems, updatedAt: Date.now() });
 
-        const local = localStorage.getItem('aidboard_saved_boards');
+        // 2. Update local state catalog
+        const storageKey = getStorageKey();
+        const local = localStorage.getItem(storageKey);
         let list: BoardMetadata[] = local ? JSON.parse(local) : [];
         const idx = list.findIndex((b) => b.id === roomId);
         const meta: BoardMetadata = {
@@ -75,24 +103,27 @@ export function useBoardStorage(roomId: string, boardName: string, elementCount:
           elementCount: safeElems.length,
           updatedAt: Date.now(),
         };
+
         if (idx >= 0) {
           list[idx] = meta;
         } else {
           list.unshift(meta);
         }
-        localStorage.setItem('aidboard_saved_boards', JSON.stringify(list));
+        list.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        localStorage.setItem(storageKey, JSON.stringify(list));
         setSavedBoards(list);
 
-        fetch(`/api/boards/${roomId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, elements: safeElems }),
-        }).catch(() => {});
+        // 3. User-isolated cloud storage if signed in
+        if (user) {
+          saveUserBoard(user.uid, roomId, name, safeElems, background).catch((err) => {
+            console.warn('Failed cloud save to user Firestore subcollection:', err);
+          });
+        }
       } catch (e) {
         console.warn('Failed saving board:', e);
       }
     },
-    [roomId]
+    [roomId, user, getStorageKey, background]
   );
 
   /**
@@ -143,14 +174,20 @@ export function useBoardStorage(roomId: string, boardName: string, elementCount:
   const deleteBoard = useCallback(
     (targetBoardId: string) => {
       deleteBoardStorage(targetBoardId);
+      const storageKey = getStorageKey();
       setSavedBoards((prev) => {
         const updated = prev.filter((b) => b.id !== targetBoardId);
-        localStorage.setItem('aidboard_saved_boards', JSON.stringify(updated));
+        localStorage.setItem(storageKey, JSON.stringify(updated));
         return updated;
       });
-      fetch(`/api/boards/${targetBoardId}`, { method: 'DELETE' }).catch(() => {});
+
+      if (user) {
+        deleteUserBoard(user.uid, targetBoardId).catch((err) => {
+          console.warn('Failed deleting board from Firestore:', err);
+        });
+      }
     },
-    []
+    [user, getStorageKey]
   );
 
   useEffect(() => {
@@ -170,6 +207,7 @@ export function useBoardStorage(roomId: string, boardName: string, elementCount:
 
   return {
     savedBoards,
+    isLoadingBoards,
     setSavedBoards,
     loadSavedBoards,
     saveBoard,

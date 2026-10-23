@@ -108,6 +108,9 @@ export const en = {
     undoAria: 'Undo last action',
     redo: 'Redo (Ctrl+Y)',
     redoAria: 'Redo last action',
+    moreTools: 'More tools',
+    moreToolsTitle: 'Open additional tools & settings',
+    quickSettings: 'Tools & Settings',
     shapes: {
       menuTitle: 'Geometric Shapes (Rectangle, Circle, Triangle, Line, Arrow)',
       menuAria: 'Geometric shapes menu, current: {{shape}}',

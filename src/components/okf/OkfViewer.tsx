@@ -44,7 +44,7 @@ export const OkfViewer: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-600 text-white">
-              OKF Bundle v2.7.0
+              OKF Bundle v2.8.1
             </span>
             <span className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
               Operational Knowledge Framework
@@ -57,7 +57,7 @@ export const OkfViewer: React.FC = () => {
 
         {/* Live Empirical Benchmark Badges */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-750 shadow-2xs">
+          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-700 shadow-2xs">
             <div className="text-[10px] text-slate-600 dark:text-zinc-300 font-medium">HTTP Throughput</div>
             <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-1">
               <Cpu className="w-3 h-3" />
@@ -66,7 +66,7 @@ export const OkfViewer: React.FC = () => {
             <div className="text-[9px] text-slate-500 dark:text-zinc-400">18.4ms avg latency</div>
           </div>
 
-          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-750 shadow-2xs">
+          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-700 shadow-2xs">
             <div className="text-[10px] text-slate-600 dark:text-zinc-300 font-medium">WebSocket Broadcast</div>
             <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-1">
               <Wifi className="w-3 h-3" />
@@ -75,7 +75,7 @@ export const OkfViewer: React.FC = () => {
             <div className="text-[9px] text-slate-500 dark:text-zinc-400">60+ concurrent peers</div>
           </div>
 
-          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-750 shadow-2xs">
+          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-700 shadow-2xs">
             <div className="text-[10px] text-slate-600 dark:text-zinc-300 font-medium">Shape Snapping</div>
             <div className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center justify-center gap-1">
               <Layers className="w-3 h-3" />
@@ -84,7 +84,7 @@ export const OkfViewer: React.FC = () => {
             <div className="text-[9px] text-slate-500 dark:text-zinc-400">0.036ms / stroke</div>
           </div>
 
-          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-750 shadow-2xs">
+          <div className="bg-white/90 dark:bg-zinc-800/90 p-1.5 rounded-lg border border-slate-200/80 dark:border-zinc-700 shadow-2xs">
             <div className="text-[10px] text-slate-600 dark:text-zinc-300 font-medium">Automated Tests</div>
             <div className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center justify-center gap-1">
               <CheckCircle2 className="w-3 h-3" />
@@ -469,9 +469,16 @@ curl -I http://localhost:3000/`}
 
             <div className="space-y-3 text-xs">
               <div className="p-2.5 rounded-lg bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800">
-                <div className="font-semibold text-indigo-700 dark:text-indigo-300">Release v2.8.0 Milestone (Latest)</div>
+                <div className="font-semibold text-indigo-700 dark:text-indigo-300">Release v2.8.1 Milestone (Latest)</div>
                 <p className="text-slate-600 dark:text-zinc-300 mt-1">
-                  Stacking context hierarchy (ADR-009) resolving header dropdown visibility over toolbar (Header relative z-40 vs Toolbar z-20). Streamlined single-indicator color picker popover, dynamic single-icon pen stroke width selector, reactive shape primitives dropdown, and full language name labels. 262 automated tests across 41 suites.
+                  Infinite 2D drawing space with SVG overflow visibility, saved boards list sorted by change date descending (latest changed at top), and responsive toolbar overflow menu for compact and resized windows. Complete i18n parity (EN, FR, DE, DA).
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">Release v2.8.0 Milestone</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  Stacking context hierarchy (ADR-009) resolving header dropdown visibility over toolbar (Header relative z-40 vs Toolbar z-20). Streamlined single-indicator color picker popover, dynamic single-icon pen stroke width selector, reactive shape primitives dropdown, non-empty board confirmation guard, and full language name labels.
                 </p>
               </div>
 

@@ -7,6 +7,24 @@ This document maintains the operational change log, release milestones, incident
 
 ## 📜 1. Version Release History
 
+### Release v2.8.1 — Infinite Drawing Space, Saved Boards Recency Sorting & Responsive Toolbar Overflow Menu
+- **True Infinite Drawing Space Across Full 2D Viewport**:
+  - Identified and eliminated SVG bounding box clipping on `<svg data-testid="whiteboard-svg">` by setting both `className="... overflow-visible"` and explicit `style={{ ..., overflow: 'visible' }}`.
+  - Resolved the viewport constraint where panning away from the initial window origin prevented drawing or clipped vector strokes and shape previews outside the initial screen rectangle. The drawing canvas now represents an unbounded infinite 2D plane in all directions with continuous panning and pinch-to-zoom.
+- **Saved Boards Sorting by Change Date (Latest Changed at Top)**:
+  - Updated `BoardsModal` to sort boards descending by timestamp (`(b.updatedAt || 0) - (a.updatedAt || 0)`), ensuring the most recently edited boards always appear first.
+  - Hardened `useBoardStorage` (`loadSavedBoards` and `executeSave`) to keep the persisted metadata array sorted by recency in IndexedDB and LocalStorage.
+- **Responsive Toolbar Overflow Menu for Reduced Window Widths**:
+  - Addressed the issue where reducing window width clipped controls on the right side of the floating toolbar (Auto-Snap, Grid, Undo, Redo).
+  - Maintained core drawing tools (Select, Pan, Pen, Highlighter, Eraser, Shapes, Text, Color Picker, Stroke Width) on the compact bar.
+  - Desktop viewports (`lg+`) render all secondary controls inline (`hidden lg:flex`).
+  - Reduced viewports and mobile devices seamlessly present an overflow menu button (`tool-overflow-menu`, `MoreHorizontal` icon).
+  - Clicking the overflow button toggles an accessible popover (`toolbar-overflow-popover`) providing direct access to Grid toggle (`overflow-toggle-grid`), Shape Snap toggle (`overflow-toggle-auto-snap`), Undo (`overflow-btn-undo`), and Redo (`overflow-btn-redo`) with live status indicators.
+- **Full Internationalization (i18n)**:
+  - Added new localized translation strings (`moreTools`, `moreToolsTitle`, `quickSettings`) across all 4 supported languages (English, French, German, Danish) with 100% key parity.
+- **Automated Test Coverage**:
+  - Expanded test suites in `BoardsModal.test.tsx`, `Toolbar.test.tsx`, and `Canvas.test.tsx` verifying infinite SVG overflow visibility, recency sorting of saved boards, and responsive overflow interactions.
+
 ### Release v2.8.0 — Floating Toolbar Refactoring, Stacking Order Hardening & Header Dropdown Fixes
 - **Header Dropdown Stacking Context & Z-Index Resolution**:
   - Elevated the main `<header>` container to `relative z-40`, ensuring all child popovers and dropdown menus (`BackgroundMenu`, `ExportMenu`, `LanguageMenu`, and `clear-confirm-dialog`) construct a stacking context that renders strictly above the floating canvas toolbar.
@@ -200,9 +218,39 @@ This document maintains the operational change log, release milestones, incident
   - Keeps toolbar popovers visible above canvas elements.
   - Ensures modal dialogs and alert dialogs maintain complete dominance over all underlying controls.
 
+### ADR-010: AI Whiteboard Vector Illustration Prompting & Model Failover Architecture
+- **Status**: Accepted
+- **Context**: Users requesting creative illustrations (such as "cute AI robot smiling with speech bubbles", characters, or custom objects) received generic "Step 1 -> Step 2 -> Step 3" flowchart diagrams whenever the model failed to decompose characters into composite shapes or timed out under high-demand network conditions.
+- **Decision**:
+  1. **Composite Vector Decomposition**: Formulate explicit prompt directives instructing Gemini to decompose creative character/object requests into composite vector elements (heads/bodies with pastel fills, circular eyes with pupils, smiling lines/arcs, antennae, waving limbs, and speech bubbles with typography).
+  2. **Hierarchical Model Failover**: Employ `gemini-3.1-flash-lite` (fast, lightweight, high-availability) as primary vector synthesis model with 12s timeout, falling back gracefully to `gemini-3.8-flash`.
+  3. **Zero-Downtime Semantic Procedural Templates**: Extend `generateProceduralDiagram` with specialized templates for robots/AI, smiling avatars/faces, and awards so that even during total network unavailability, the user receives an authentic, adorable vector illustration matching their exact prompt.
+  4. **Schema Tolerance**: Normalize elements across `type` and `shapeType`, auto-calculating `width` and `height` from bounding coordinates or aspect ratios.
+- **Rationale**:
+  - Eliminates mismatched flowchart renders for creative illustration prompts.
+  - Generates rich, modern whiteboard graphics with 8-25 coordinated vector shapes and typography labels.
+  - Guarantees 100% uptime with zero freezes or unhandled exceptions.
+
 ---
 
 ## 🔍 3. Incident Post-Mortems & Resolved Anomalies
+
+### Incident INC-2026-10-23-B: Low Contrast on Help Feature Tiles in Dark Mode
+- **Summary**: In dark mode, HelpModal feature guide tiles rendered with white-on-light-grey text, making them illegible until hovered.
+- **Root Cause**: The tile container applied `dark:bg-zinc-850/70`, which is not a valid Tailwind color step (Tailwind provides zinc-800, zinc-900, etc., but not 850). Consequently, the dark background class was ignored by the CSS compiler, causing the tile to fall back to the light-mode `bg-slate-50/70` surface while text styling activated dark-mode white/light-grey text (`dark:text-zinc-100` and `dark:text-zinc-200`). When hovered, `dark:hover:bg-zinc-800` was valid, making the tile readable only on hover.
+- **Resolution**: Replaced invalid `dark:bg-zinc-850/70` with valid `dark:bg-zinc-800` (hover `dark:hover:bg-zinc-700/80`), `dark:border-zinc-700/80` (hover `dark:hover:border-zinc-600`), and enhanced text contrast with `dark:text-zinc-100` for titles and `dark:text-zinc-300` for descriptions. Audited and corrected other invalid 50-step zinc classes across `BoardsModal`, `ShareModal`, and `OkfViewer`. Added automated regression test in `src/test/HelpModal.test.tsx`.
+
+### Incident INC-2026-10-23: Generic Flowchart Returned for "Cute AI Robot" Drawing Prompt
+- **Summary**: Requesting the AI Whiteboard Artist to draw "cute AI robot smiling with speech bubbles" produced a generic "Step 1 -> Step 2 -> Step 3" flowchart instead of any robot or speech bubbles.
+- **Root Cause**:
+  1. The API request in `server.ts` had an overly short 5,000ms timeout that aborted Gemini during model demand spikes, silently triggering the catch block.
+  2. The procedural fallback generator only matched `login`, `architecture`, `kanban`, and `mind map`, falling back to `Step 1 -> Step 2 -> Step 3` for any other prompt.
+  3. The system prompt and response schema lacked character decomposition guidance (head, eyes, smile, limbs, speech bubbles, color fills).
+- **Resolution**:
+  1. Overhauled the system instruction and prompt template with clear decomposition guidelines for characters, robots, smiling expressions, speech bubbles, and pastel color palettes.
+  2. Integrated `gemini-3.1-flash-lite` with a 12-second timeout and fallback to `gemini-3.8-flash`.
+  3. Added a dedicated 24-element vector robot procedural template with antenna, smiling face, chest screen, waving arm, and speech bubble ("Hello human! Beep boop! ✨").
+  4. Added element sanitization for flexible schema properties.
 
 ### Incident INC-2026-10-21: Header Dropdown Menus Obstructed Behind Floating Drawing Toolbar
 - **Summary**: Clicking header action dropdowns (Background grid texture selector, Export format menu, Language options, Clear board confirmation dialog) opened the options list behind the floating drawing toolbar, preventing users from selecting menu items.

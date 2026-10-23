@@ -461,10 +461,11 @@ export const Canvas: React.FC<CanvasProps> = ({
       {/* Main SVG Vector Layer */}
       <svg
         data-testid="whiteboard-svg"
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
         style={{
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           transformOrigin: '0 0',
+          overflow: 'visible',
         }}
       >
         <CanvasElementsLayer

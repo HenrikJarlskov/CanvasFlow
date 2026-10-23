@@ -108,6 +108,9 @@ export const da = {
     undoAria: 'Fortryd sidste handling',
     redo: 'Annuller fortryd (Ctrl+Y)',
     redoAria: 'Gentag sidste handling',
+    moreTools: 'Flere værktøjer',
+    moreToolsTitle: 'Åbn yderligere værktøjer og indstillinger',
+    quickSettings: 'Værktøjer og indstillinger',
     shapes: {
       menuTitle: 'Geometriske former (Rektangel, Cirkel, Trekant, Linje, Pil)',
       menuAria: 'Formmenu, aktuel: {{shape}}',

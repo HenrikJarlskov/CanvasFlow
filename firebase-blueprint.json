@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile representation in Firestore",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Firebase Auth user unique identifier",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "description": "User verified email address",
+          "maxLength": 254
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name",
+          "maxLength": 100
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User avatar image URL",
+          "maxLength": 1024
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account creation timestamp"
+        }
+      },
+      "required": ["id", "email", "createdAt"]
+    },
+    "Board": {
+      "title": "Board",
+      "description": "Individual whiteboard document owned by an authenticated user",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Whiteboard identifier",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the board owner",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable whiteboard name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "elementCount": {
+          "type": "number",
+          "description": "Count of elements on the board"
+        },
+        "elements": {
+          "type": "array",
+          "description": "Array of vector elements on the canvas"
+        },
+        "background": {
+          "type": "string",
+          "description": "Canvas background grid type",
+          "maxLength": 30
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Board creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Board last modification timestamp"
+        }
+      },
+      "required": ["id", "ownerId", "name", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document"
+    },
+    "/users/{userId}/boards/{boardId}": {
+      "schema": "Board",
+      "description": "Subcollection of personal whiteboards owned exclusively by userId"
+    }
+  }
+}

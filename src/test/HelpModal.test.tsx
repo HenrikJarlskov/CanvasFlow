@@ -206,4 +206,24 @@ describe('HelpModal Component', () => {
     fireEvent.click(screen.getByTestId('okf-tab-index'));
     expect(screen.getByText('Master Index & Architecture Overview')).toBeInTheDocument();
   });
+
+  it('renders feature guide tiles with high-contrast dark mode classes', () => {
+    render(
+      <HelpModal
+        isOpen={true}
+        onClose={vi.fn()}
+        shortcuts={DEFAULT_SHORTCUTS}
+        onUpdateShortcuts={vi.fn()}
+      />
+    );
+
+    const canvasTileTitle = screen.getByText('Infinite Vector Canvas');
+    const tileCard = canvasTileTitle.closest('div.rounded-xl');
+    expect(tileCard).not.toBeNull();
+    // Verify valid dark mode background and border classes
+    expect(tileCard?.className).toContain('dark:bg-zinc-800');
+    expect(tileCard?.className).toContain('dark:border-zinc-700');
+    // Verify title has high contrast white/zinc-100 class
+    expect(canvasTileTitle.className).toContain('dark:text-zinc-100');
+  });
 });

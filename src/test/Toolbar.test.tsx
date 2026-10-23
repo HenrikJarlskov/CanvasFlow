@@ -253,4 +253,59 @@ describe('Toolbar Component', () => {
     fireEvent.click(screen.getByTestId('tool-import'));
     expect(onOpenImportModal).toHaveBeenCalledTimes(1);
   });
+
+  it('toggles responsive overflow menu and executes quick tools (grid, snap, undo, redo)', () => {
+    const onToggleGrid = vi.fn();
+    const onToggleAutoSnap = vi.fn();
+    const onUndo = vi.fn();
+    const onRedo = vi.fn();
+
+    render(
+      <Toolbar
+        {...defaultProps}
+        autoSnap={true}
+        onToggleAutoSnap={onToggleAutoSnap}
+        background="grid"
+        onToggleGrid={onToggleGrid}
+        canUndo={true}
+        canRedo={true}
+        onUndo={onUndo}
+        onRedo={onRedo}
+      />
+    );
+
+    // Overflow button exists
+    const overflowBtn = screen.getByTestId('tool-overflow-menu');
+    expect(overflowBtn).toBeInTheDocument();
+    expect(screen.queryByTestId('toolbar-overflow-popover')).not.toBeInTheDocument();
+
+    // Click to open overflow popover
+    fireEvent.click(overflowBtn);
+    expect(screen.getByTestId('toolbar-overflow-popover')).toBeInTheDocument();
+
+    // Toggle grid via overflow
+    const overflowGrid = screen.getByTestId('overflow-toggle-grid');
+    expect(overflowGrid).toBeInTheDocument();
+    fireEvent.click(overflowGrid);
+    expect(onToggleGrid).toHaveBeenCalledTimes(1);
+
+    // Toggle auto-snap via overflow
+    const overflowSnap = screen.getByTestId('overflow-toggle-auto-snap');
+    expect(overflowSnap).toBeInTheDocument();
+    fireEvent.click(overflowSnap);
+    expect(onToggleAutoSnap).toHaveBeenCalledTimes(1);
+
+    // Undo & redo via overflow
+    const overflowUndo = screen.getByTestId('overflow-btn-undo');
+    fireEvent.click(overflowUndo);
+    expect(onUndo).toHaveBeenCalledTimes(1);
+
+    const overflowRedo = screen.getByTestId('overflow-btn-redo');
+    fireEvent.click(overflowRedo);
+    expect(onRedo).toHaveBeenCalledTimes(1);
+
+    // Click overflow button again to close
+    fireEvent.click(overflowBtn);
+    expect(screen.queryByTestId('toolbar-overflow-popover')).not.toBeInTheDocument();
+  });
 });

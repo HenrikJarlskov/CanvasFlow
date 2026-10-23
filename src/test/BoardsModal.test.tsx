@@ -284,4 +284,30 @@ describe('BoardsModal Component', () => {
     fireEvent.click(screen.getByText('Close'));
     expect(onClose).toHaveBeenCalledTimes(2);
   });
+
+  it('displays the list of saved boards sorted by change date with latest changed at top', () => {
+    const unorderedBoards: BoardMetadata[] = [
+      { id: 'board-old', name: 'Old Board', updatedAt: 1000, elementCount: 1 },
+      { id: 'board-newest', name: 'Newest Board', updatedAt: 5000, elementCount: 4 },
+      { id: 'board-middle', name: 'Middle Board', updatedAt: 3000, elementCount: 2 },
+    ];
+
+    render(
+      <BoardsModal
+        isOpen={true}
+        onClose={vi.fn()}
+        boards={unorderedBoards}
+        currentBoardId="board-middle"
+        onSelectBoard={vi.fn()}
+        onCreateNewBoard={vi.fn()}
+        onDeleteBoard={vi.fn()}
+        onImportBoard={vi.fn()}
+        onExportCurrentJson={vi.fn()}
+      />
+    );
+
+    const list = screen.getByTestId('boards-list');
+    const boardTitles = Array.from(list.querySelectorAll('h4')).map((h) => h.textContent);
+    expect(boardTitles).toEqual(['Newest Board', 'Middle Board', 'Old Board']);
+  });
 });

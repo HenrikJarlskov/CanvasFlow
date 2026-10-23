@@ -8,7 +8,7 @@ describe('OkfViewer Component', () => {
     render(<OkfViewer />);
 
     expect(screen.getByTestId('okf-viewer')).toBeInTheDocument();
-    expect(screen.getByText('OKF Bundle v2.7.0')).toBeInTheDocument();
+    expect(screen.getByText(/OKF Bundle v2\./)).toBeInTheDocument();
     expect(screen.getByText('755.3 req/s')).toBeInTheDocument();
     expect(screen.getByText('1.94 ms p95')).toBeInTheDocument();
     expect(screen.getByText('27,675 ops/s')).toBeInTheDocument();

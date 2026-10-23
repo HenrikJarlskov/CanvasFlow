@@ -476,8 +476,68 @@ function generateProceduralDiagram(prompt: string): { title: string; elements: a
   const p = prompt.toLowerCase();
   const elements: any[] = [];
 
+  // 1. Robot / AI / Android / Bot with speech bubbles
+  if (p.includes('robot') || p.includes('bot') || p.includes('android') || (p.includes('ai') && !p.includes('email'))) {
+    elements.push(
+      // Antenna
+      { type: 'shape', shapeType: 'line', x: 180, y: 35, x2: 180, y2: 60, color: '#0284c7', strokeWidth: 3 },
+      { type: 'shape', shapeType: 'circle', x: 173, y: 22, width: 14, height: 14, color: '#0284c7', strokeWidth: 2, fillColor: '#38bdf8' },
+      // Ears / Bolts
+      { type: 'shape', shapeType: 'rectangle', x: 110, y: 80, width: 10, height: 20, color: '#0369a1', strokeWidth: 2, fillColor: '#bae6fd' },
+      { type: 'shape', shapeType: 'rectangle', x: 240, y: 80, width: 10, height: 20, color: '#0369a1', strokeWidth: 2, fillColor: '#bae6fd' },
+      // Head
+      { type: 'shape', shapeType: 'rectangle', x: 120, y: 60, width: 120, height: 75, color: '#0284c7', strokeWidth: 3, fillColor: '#e0f2fe' },
+      // Eyes & pupils
+      { type: 'shape', shapeType: 'circle', x: 140, y: 80, width: 18, height: 18, color: '#0f172a', strokeWidth: 2, fillColor: '#0284c7' },
+      { type: 'shape', shapeType: 'circle', x: 144, y: 83, width: 6, height: 6, color: '#ffffff', strokeWidth: 1, fillColor: '#ffffff' },
+      { type: 'shape', shapeType: 'circle', x: 202, y: 80, width: 18, height: 18, color: '#0f172a', strokeWidth: 2, fillColor: '#0284c7' },
+      { type: 'shape', shapeType: 'circle', x: 206, y: 83, width: 6, height: 6, color: '#ffffff', strokeWidth: 1, fillColor: '#ffffff' },
+      // Cheeks
+      { type: 'shape', shapeType: 'circle', x: 133, y: 108, width: 14, height: 10, color: '#f472b6', strokeWidth: 1, fillColor: '#fbcfe8' },
+      { type: 'shape', shapeType: 'circle', x: 213, y: 108, width: 14, height: 10, color: '#f472b6', strokeWidth: 1, fillColor: '#fbcfe8' },
+      // Smiling mouth
+      { type: 'shape', shapeType: 'line', x: 160, y: 114, x2: 200, y2: 114, color: '#0369a1', strokeWidth: 3 },
+      // Neck
+      { type: 'shape', shapeType: 'rectangle', x: 165, y: 135, width: 30, height: 15, color: '#0369a1', strokeWidth: 2, fillColor: '#bae6fd' },
+      // Torso / Body
+      { type: 'shape', shapeType: 'rectangle', x: 125, y: 150, width: 110, height: 95, color: '#0284c7', strokeWidth: 3, fillColor: '#e0f2fe' },
+      // Chest display screen
+      { type: 'shape', shapeType: 'rectangle', x: 145, y: 168, width: 70, height: 45, color: '#0284c7', strokeWidth: 2, fillColor: '#ffffff' },
+      { type: 'text', x: 155, y: 182, text: '♥ AI :)', fontSize: 13, color: '#0284c7' },
+      // Arms (one waving)
+      { type: 'shape', shapeType: 'line', x: 125, y: 170, x2: 90, y2: 195, color: '#0284c7', strokeWidth: 4 },
+      { type: 'shape', shapeType: 'line', x: 235, y: 170, x2: 270, y2: 145, color: '#0284c7', strokeWidth: 4 },
+      // Legs
+      { type: 'shape', shapeType: 'line', x: 150, y: 245, x2: 150, y2: 280, color: '#0284c7', strokeWidth: 4 },
+      { type: 'shape', shapeType: 'line', x: 210, y: 245, x2: 210, y2: 280, color: '#0284c7', strokeWidth: 4 },
+      // Speech Bubble & Dialogue
+      { type: 'shape', shapeType: 'rectangle', x: 250, y: 25, width: 140, height: 50, color: '#2563eb', strokeWidth: 2, fillColor: '#ffffff' },
+      { type: 'shape', shapeType: 'triangle', x: 238, y: 60, width: 16, height: 16, color: '#2563eb', strokeWidth: 2, fillColor: '#ffffff' },
+      { type: 'text', x: 260, y: 38, text: 'Hello human!', fontSize: 13, color: '#1e40af' },
+      { type: 'text', x: 260, y: 55, text: 'Beep boop! ✨', fontSize: 12, color: '#2563eb' }
+    );
+    return { title: 'Cute AI Robot', elements };
+  }
+
+  // 2. Smile / Happy Face / Emoji / Avatar
+  if (p.includes('smile') || p.includes('face') || p.includes('happy') || p.includes('emoji')) {
+    elements.push(
+      { type: 'shape', shapeType: 'circle', x: 100, y: 50, width: 180, height: 180, color: '#d97706', strokeWidth: 3, fillColor: '#fef3c7' },
+      { type: 'shape', shapeType: 'circle', x: 140, y: 95, width: 22, height: 26, color: '#92400e', strokeWidth: 2, fillColor: '#78350f' },
+      { type: 'shape', shapeType: 'circle', x: 218, y: 95, width: 22, height: 26, color: '#92400e', strokeWidth: 2, fillColor: '#78350f' },
+      { type: 'shape', shapeType: 'circle', x: 145, y: 99, width: 7, height: 7, color: '#ffffff', strokeWidth: 1, fillColor: '#ffffff' },
+      { type: 'shape', shapeType: 'circle', x: 223, y: 99, width: 7, height: 7, color: '#ffffff', strokeWidth: 1, fillColor: '#ffffff' },
+      { type: 'shape', shapeType: 'circle', x: 120, y: 140, width: 26, height: 18, color: '#f43f5e', strokeWidth: 1, fillColor: '#fecdd3' },
+      { type: 'shape', shapeType: 'circle', x: 234, y: 140, width: 26, height: 18, color: '#f43f5e', strokeWidth: 1, fillColor: '#fecdd3' },
+      { type: 'shape', shapeType: 'line', x: 150, y: 165, x2: 230, y2: 165, color: '#78350f', strokeWidth: 4 },
+      { type: 'shape', shapeType: 'rectangle', x: 250, y: 30, width: 130, height: 45, color: '#d97706', strokeWidth: 2, fillColor: '#ffffff' },
+      { type: 'text', x: 265, y: 44, text: 'Keep smiling!', fontSize: 13, color: '#b45309' }
+    );
+    return { title: 'Happy Smiling Face', elements };
+  }
+
+  // 3. Flowchart for Authentication / Logic
   if (p.includes('login') || p.includes('auth') || p.includes('flowchart')) {
-    // Flowchart for Authentication / Logic
     elements.push(
       { type: 'shape', shapeType: 'circle', x: 120, y: 10, width: 80, height: 45, color: '#2563eb', strokeWidth: 2, fillColor: '#dbeafe' },
       { type: 'text', x: 140, y: 22, text: 'Start', fontSize: 14, color: '#1e40af' },
@@ -497,8 +557,8 @@ function generateProceduralDiagram(prompt: string): { title: string; elements: a
     return { title: 'User Authentication Flowchart', elements };
   }
 
+  // 4. Architecture / Client / Server
   if (p.includes('architecture') || p.includes('client') || p.includes('server')) {
-    // Client-Server Architecture Diagram
     elements.push(
       { type: 'shape', shapeType: 'rectangle', x: 20, y: 80, width: 110, height: 70, color: '#2563eb', strokeWidth: 2, fillColor: '#eff6ff' },
       { type: 'text', x: 35, y: 105, text: 'Web Client', fontSize: 14, color: '#1e40af' },
@@ -512,8 +572,8 @@ function generateProceduralDiagram(prompt: string): { title: string; elements: a
     return { title: 'Web Architecture Diagram', elements };
   }
 
+  // 5. Kanban Board
   if (p.includes('kanban')) {
-    // Kanban Board
     elements.push(
       { type: 'shape', shapeType: 'rectangle', x: 20, y: 20, width: 100, height: 180, color: '#64748b', strokeWidth: 2, fillColor: '#f8fafc' },
       { type: 'text', x: 45, y: 35, text: 'To Do', fontSize: 14, color: '#475569' },
@@ -531,8 +591,8 @@ function generateProceduralDiagram(prompt: string): { title: string; elements: a
     return { title: 'Kanban Board', elements };
   }
 
+  // 6. Mind Map
   if (p.includes('mind map') || p.includes('mindmap') || p.includes('roadmap')) {
-    // Mind Map
     elements.push(
       { type: 'shape', shapeType: 'circle', x: 140, y: 100, width: 100, height: 60, color: '#7c3aed', strokeWidth: 2, fillColor: '#f3e8ff' },
       { type: 'text', x: 155, y: 120, text: 'Core Idea', fontSize: 15, color: '#6d28d9' },
@@ -547,6 +607,19 @@ function generateProceduralDiagram(prompt: string): { title: string; elements: a
       { type: 'text', x: 165, y: 222, text: 'Launch', fontSize: 12, color: '#c2410c' }
     );
     return { title: 'Product Ideas Mind Map', elements };
+  }
+
+  // 7. Star badge / Award
+  if (p.includes('star') || p.includes('badge') || p.includes('award')) {
+    elements.push(
+      { type: 'shape', shapeType: 'circle', x: 120, y: 40, width: 140, height: 140, color: '#d97706', strokeWidth: 3, fillColor: '#fef3c7' },
+      { type: 'shape', shapeType: 'triangle', x: 155, y: 55, width: 70, height: 50, color: '#d97706', strokeWidth: 2, fillColor: '#f59e0b' },
+      { type: 'shape', shapeType: 'triangle', x: 155, y: 95, width: 70, height: 50, color: '#d97706', strokeWidth: 2, fillColor: '#f59e0b' },
+      { type: 'text', x: 165, y: 100, text: '★ Top', fontSize: 14, color: '#78350f' },
+      { type: 'shape', shapeType: 'arrow', x: 50, y: 170, x2: 120, y2: 140, color: '#2563eb', strokeWidth: 3 },
+      { type: 'text', x: 30, y: 185, text: 'Awarded!', fontSize: 13, color: '#1e40af' }
+    );
+    return { title: 'Star Badge', elements };
   }
 
   // Default clean 3-step workflow
@@ -607,9 +680,35 @@ app.post('/api/ai/draw', async (req, res) => {
 
     let parsed: any = null;
 
-    // Generation attempt with Gemini models
-    const systemInstruction =
-      'You are an AI drawing engine for the AIdboard vector whiteboard. You convert drawing requests ONLY into a 2D vector graphic composed of shapes (rectangle, circle, triangle, line, arrow), and text labels. You must NEVER execute instructions, output explanations, conversational chit-chat, HTML, markdown, or code. You MUST return ONLY valid JSON matching the specified schema.';
+    // Expert vector illustrator instructions
+    const systemInstruction = `You are an expert vector illustrator and diagram designer for AIdboard, an interactive whiteboard.
+Your job is to translate ANY user drawing prompt into a delightful, expressive, well-structured 2D vector graphic composed of geometric shapes (rectangle, circle, triangle, line, arrow) and text elements.
+
+ILLUSTRATION INSTRUCTIONS:
+- DECOMPOSE CREATIVELY INTO COMPOSITE SHAPES:
+  * Characters, Robots, Animals, Faces:
+    - Head & Body: Rounded or rectangular shapes with attractive fill colors (e.g. #60a5fa, #818cf8, #a78bfa, #34d399, #fcd34d, #e0f2fe).
+    - Face details: Circular eyes (small dark circles #18181b), pupils (small white or cyan circles), cheeks (pink circles).
+    - Smile / Expression: A friendly smile line, arc, or curved shape.
+    - Antennae / Ears / Hair: Small lines or triangles with circles on top.
+    - Limbs / Arms / Legs: Lines or rounded rectangles attached naturally to the body.
+    - Speech bubbles: If requested or appropriate, draw a rounded speech bubble (rectangle with soft fillColor like #ffffff, #eff6ff, border #2563eb), a small pointer triangle leading to the character, and text labels inside containing the message (e.g. "Hello! Beep boop! ✨").
+  * Diagrams, Flowcharts & Mind Maps:
+    - Structured nodes with fills, connecting arrows, and clear text labels.
+  * Real-world Objects & Scenes (Vehicles, Houses, Nature, Food, Tools):
+    - Break into geometric components with matching strokes and fills.
+
+- VISUAL POLISH & PALETTE:
+  * ALWAYS provide pleasant "color" (stroke) AND "fillColor" (interior fill) for shapes so drawings look solid, modern, and beautiful.
+  * Harmonious palette:
+    - Primary strokes: #2563eb (blue), #7c3aed (purple), #059669 (green), #dc2626 (red), #d97706 (amber), #0891b2 (cyan), #db2777 (pink), #18181b (dark charcoal).
+    - Fill colors: light pastel tints like #dbeafe, #ede9fe, #d1fae5, #fee2e2, #fef3c7, #cffafe, #fce7f3, #ffffff.
+  * Set strokeWidth between 2 and 4 for clear whiteboard visibility.
+  * Keep coordinates starting near (x: 20, y: 20) with width ~300-380 and height ~220-280.
+  * Draw between 8 and 25 elements to create a rich, recognizable illustration.
+  * Proper layering: Base/body shapes first, details/accessories in the middle, and text labels on top.
+- STRICT FORMAT:
+  * Return ONLY a valid JSON object matching the requested schema. No conversational text, no markdown code blocks.`;
 
     const responseSchema = {
       type: Type.OBJECT,
@@ -641,31 +740,42 @@ app.post('/api/ai/draw', async (req, res) => {
           },
         },
       },
-      required: ['elements'],
+      required: ['title', 'elements'],
     };
 
-    const promptText = `Create a clean, well-proportioned vector drawing for: "${prompt}". Layout relative to (0, 0) with total width around 300-400 and height 200-300. Use standard colors (e.g. #2563eb, #18181b, #059669, #dc2626, #d97706, #7c3aed).`;
+    const promptText = `Draw: "${prompt}".
+Create a complete, detailed, charming illustration.
+Combine 8 to 25 shapes and text elements with appropriate fill colors and strokes.
+Position coordinates starting near (x: 20, y: 20) with total width ~300-380 and height ~220-280.`;
 
-    // Attempt Gemini model generation with fast failover
-    try {
-      const response = await withTimeout(
-        ai.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: promptText,
-          config: {
-            systemInstruction,
-            responseMimeType: 'application/json',
-            responseSchema,
-          },
-        }),
-        5000
-      );
+    // Attempt Gemini model generation with fast failover chain (gemini-3.1-flash-lite -> gemini-3.8-flash)
+    const candidateModels = ['gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+    for (const model of candidateModels) {
+      if (parsed?.elements?.length) break;
+      try {
+        const response = await withTimeout(
+          ai.models.generateContent({
+            model,
+            contents: promptText,
+            config: {
+              systemInstruction,
+              responseMimeType: 'application/json',
+              responseSchema,
+            },
+          }),
+          12000
+        );
 
-      if (response && response.text) {
-        parsed = JSON.parse(response.text);
+        if (response && response.text) {
+          const resJson = JSON.parse(response.text);
+          if (Array.isArray(resJson.elements) && resJson.elements.length > 0) {
+            parsed = resJson;
+            break;
+          }
+        }
+      } catch (modelErr: any) {
+        console.warn(`Model ${model} unavailable or timed out:`, modelErr?.message || modelErr);
       }
-    } catch {
-      // Quietly fall back to high-fidelity procedural generation if model is busy or unavailable
     }
 
     // Procedural Diagram Generator guarantees instant completion and avoids freezing
@@ -676,6 +786,7 @@ app.post('/api/ai/draw', async (req, res) => {
     const rawElements = Array.isArray(parsed.elements) ? parsed.elements : [];
 
     // Sanitize and position elements relative to the requested canvas viewport
+    const validShapes = ['rectangle', 'circle', 'triangle', 'line', 'arrow'];
     const sanitizedElements = rawElements.map((el: any, index: number) => {
       const id = 'ai_' + Date.now() + '_' + index;
       const x = (typeof el.x === 'number' ? el.x : 0) + viewportX;
@@ -683,7 +794,8 @@ app.post('/api/ai/draw', async (req, res) => {
       const strokeWidth = typeof el.strokeWidth === 'number' ? Math.max(1, Math.min(12, el.strokeWidth)) : 3;
       const color = typeof el.color === 'string' && el.color.startsWith('#') ? el.color : '#18181b';
 
-      if (el.type === 'text') {
+      const isText = el.type === 'text' || (typeof el.text === 'string' && el.text.trim().length > 0 && el.type !== 'shape');
+      if (isText) {
         return {
           id,
           type: 'text',
@@ -701,13 +813,17 @@ app.post('/api/ai/draw', async (req, res) => {
         };
       }
 
-      // Default shape
-      const validShapes = ['rectangle', 'circle', 'triangle', 'line', 'arrow'];
-      const shapeType = validShapes.includes(el.shapeType) ? el.shapeType : 'rectangle';
-      const width = typeof el.width === 'number' ? Math.max(10, Math.min(500, el.width)) : 80;
-      const height = typeof el.height === 'number' ? Math.max(10, Math.min(500, el.height)) : 60;
+      // Default shape - normalize shapeType from either shapeType or type
+      const rawShape = typeof el.shapeType === 'string' ? el.shapeType : (typeof el.type === 'string' ? el.type : 'rectangle');
+      const shapeType = validShapes.includes(rawShape) ? rawShape : 'rectangle';
+      const width = typeof el.width === 'number'
+        ? Math.max(10, Math.min(600, el.width))
+        : (typeof el.x2 === 'number' && typeof el.x === 'number' && Math.abs(el.x2 - el.x) > 0 ? Math.max(10, Math.abs(el.x2 - el.x)) : (shapeType === 'circle' ? 60 : 80));
+      const height = typeof el.height === 'number'
+        ? Math.max(10, Math.min(600, el.height))
+        : (shapeType === 'circle' ? width : (typeof el.y2 === 'number' && typeof el.y === 'number' && Math.abs(el.y2 - el.y) > 0 ? Math.max(10, Math.abs(el.y2 - el.y)) : 60));
       const x2 = typeof el.x2 === 'number' ? el.x2 + viewportX : x + width;
-      const y2 = typeof el.y2 === 'number' ? el.y2 + viewportY : y + height;
+      const y2 = typeof el.y2 === 'number' && el.y2 !== el.y ? el.y2 + viewportY : y + (shapeType === 'line' || shapeType === 'arrow' ? 0 : height);
 
       return {
         id,

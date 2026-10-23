@@ -27,6 +27,8 @@ import { useWhiteboardShortcuts } from './hooks/useWhiteboardShortcuts';
 import { useWhiteboardOcr } from './hooks/useWhiteboardOcr';
 import { useWhiteboardAiDraw } from './hooks/useWhiteboardAiDraw';
 import { useBoardOrchestration } from './hooks/useBoardOrchestration';
+import { useAuth } from './context/AuthContext';
+import { getUserBoard } from './services/boardService';
 import { useTranslation } from 'react-i18next';
 
 export default function App() {
@@ -98,18 +100,20 @@ export default function App() {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [currentUser, setCurrentUser] = useState(getStoredUser());
 
-  // Board Orchestration & Persistence
-  const { savedBoards, saveBoard, deleteBoard } = useBoardStorage('temp', 'My Whiteboard', elements.length);
+  // Firebase Google Authentication
+  const { user } = useAuth();
+
+  const saveBoardRef = useRef<(elems: BoardElement[], name?: string, immediate?: boolean) => void>(() => {});
 
   const handleElementsChange = useCallback(
     (newElements: BoardElement[], operation = 'update') => {
       const cloned = cloneElements(newElements);
       setElements(cloned);
       pushHistory(cloned);
-      saveBoard(cloned);
+      saveBoardRef.current(cloned);
       socketRef.current?.sendElementsChange(cloned, operation);
     },
-    [pushHistory, saveBoard, setElements]
+    [pushHistory, setElements]
   );
 
   const handleChangeColor = useCallback(
@@ -186,13 +190,60 @@ export default function App() {
     elements,
     setElements,
     resetState,
-    saveBoard,
+    saveBoard: (elems, name) => saveBoardRef.current(elems, name),
     handleElementsChange,
     setSelectedIds,
     socketRef,
     pan,
     zoom,
   });
+
+  // User-isolated board persistence in Firestore & IndexedDB
+  const { savedBoards, saveBoard, deleteBoard } = useBoardStorage(
+    roomId,
+    boardName,
+    elements.length,
+    user,
+    background
+  );
+
+  useEffect(() => {
+    saveBoardRef.current = saveBoard;
+  }, [saveBoard]);
+
+  // Load board from user's isolated Firestore collection if available
+  useEffect(() => {
+    if (!user) return;
+    getUserBoard(user.uid, roomId)
+      .then((cloudBoard) => {
+        if (cloudBoard) {
+          if (Array.isArray(cloudBoard.elements) && cloudBoard.elements.length > 0) {
+            resetState(cloudBoard.elements);
+          }
+          if (cloudBoard.name) {
+            setBoardName(cloudBoard.name);
+          }
+          if (cloudBoard.background) {
+            setBackground(cloudBoard.background as BackgroundType);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not load board from user Firestore storage:', err);
+      });
+  }, [user, roomId, resetState, setBoardName]);
+
+  // Sync collaborator user name with Google profile
+  useEffect(() => {
+    if (user?.displayName || user?.email) {
+      const displayName = user.displayName || user.email?.split('@')[0] || 'Collaborator';
+      setCurrentUser((prev) => ({
+        ...prev,
+        userName: displayName,
+      }));
+      socketRef.current?.setUserName(displayName);
+    }
+  }, [user]);
 
   const handleSaveBoardAndNew = useCallback(() => {
     saveBoard(elements, boardName, true);

@@ -27,7 +27,20 @@ The canvas is composed of five segregated rendering layers managed in `src/compo
 4. **`CanvasRemoteCursors`**: Real-time collaborator pointer arrows with custom user colors, name badges, and pulse beacons.
 5. **`CanvasInlineTextEditor`**: Scaled absolute HTML textarea for inline typography editing.
 
-### 1.3 Toolbar Workspace Grid Lines Control (Clean vs Grid-Assisted Workspace)
+### 1.3 Unbounded Infinite 2D Workspace
+The vector scene graph (`<svg data-testid="whiteboard-svg">`) is configured with explicit `overflow: visible` and `className="... overflow-visible"`. This architectural design ensures that when users pan across the board into negative or high coordinates, visual elements, freehand strokes, and preview geometries are never clipped by the initial browser viewport bounds, providing an unbounded infinite drawing canvas in all 360 degrees.
+
+### 1.4 Responsive Floating Toolbar & Overflow Menu
+To accommodate varying viewport widths (from full ultra-wide monitors down to compact laptops, tablets, and phones):
+- **Core Vector Tools**: Drawing tools (Select, Pan Hand, Pen, Highlighter, Eraser, Shapes Popover, Text, Color Picker Popover, Stroke Width Selector) remain compact and accessible on the primary bar.
+- **Desktop Secondary Controls**: Large toggle badges (`toggle-auto-snap`, `toggle-grid`, `btn-undo`, `btn-redo`) display inline on screens with width $\ge 1024\text{px}$ (`hidden lg:flex`).
+- **Adaptive Overflow Menu**: On reduced viewports ($< 1024\text{px}$), the toolbar dynamically condenses and renders a responsive overflow trigger (`tool-overflow-menu`, `MoreHorizontal` icon).
+- **Quick-Settings Popover**: Clicking the overflow trigger opens `toolbar-overflow-popover` containing Grid lines toggle (`overflow-toggle-grid`), Shape auto-snap toggle (`overflow-toggle-auto-snap`), Undo (`overflow-btn-undo`), and Redo (`overflow-btn-redo`), preventing any toolbar items from disappearing or overflowing off-screen.
+
+### 1.5 Recency-Sorted Whiteboard Library
+The saved whiteboard selector (`BoardsModal`) displays boards sorted chronologically descending by change date (`updatedAt` timestamp), ensuring that the most recently updated whiteboard always appears at the top of the list for instant access.
+
+### 1.6 Toolbar Workspace Grid Lines Control (Clean vs Grid-Assisted Workspace)
 The primary floating toolbar provides a dedicated toggle control (`data-testid="toggle-grid"`, alias `toggle-grid-lines`) allowing users to switch dynamically between a clean workspace and a grid-assisted workspace:
 - **Instant Workspace Toggling**: One-click switching between untextured clean canvas (`blank`) and structured alignment grid (`grid`).
 - **Dynamic Badge Feedback**: Visual indicator badge (`data-testid="grid-status"`) displaying localized status (`ON` / `OFF`) in the user's active language.
@@ -121,10 +134,18 @@ The collaboration server (`server.ts`) runs on a shared HTTP server port, managi
 
 ---
 
-## 🤖 6. AI Whiteboard Artist (Gemini Flash)
+## 🤖 6. AI Whiteboard Artist (Gemini Flash & Vector Synthesizer)
 
-- **Natural Language Canvas Generation**: Prompts like *"Create a 3-tier microservices architecture on SAP BTP"* generate interconnected vector elements (rectangles, containers, arrows, text labels).
-- **Progress Orchestration**: Multi-stage progress indicators (`Connecting` $\to$ `Synthesizing vector geometry` $\to$ `Assembling shapes & colors`).
+- **Vector Illustration Decomposition**:
+  Translates natural language prompts (e.g. *"cute AI robot smiling with speech bubbles"*, *"Client-Server web architecture"*, *"Mind map of product roadmap"*) into rich, multi-shape vector graphics (8–25 elements).
+  - **Character & Robot Anatomy**: Automatically constructs composite geometry: heads, bodies, circular eyes with pupils, rosy cheeks, smiling mouth lines, antennae, waving limbs, chest display screens, and speech bubbles with custom typography labels.
+  - **Harmonious Color Palette**: Pairs primary border strokes (`#0284c7`, `#2563eb`, `#7c3aed`, `#059669`, `#d97706`) with light pastel fills (`#e0f2fe`, `#dbeafe`, `#ede9fe`, `#d1fae5`, `#fef3c7`, `#ffffff`) for modern, high-contrast whiteboard aesthetics.
+- **Hierarchical Model Failover**:
+  1. Primary Model: `gemini-3.1-flash-lite` with 12s timeout for sub-second, low-latency JSON vector generation.
+  2. Secondary Failover: `gemini-3.8-flash` for complex reasoning and fallback availability.
+  3. Zero-Downtime Procedural Generator: Instant local synthesis fallback supporting robots, smiling faces, flowcharts, architecture diagrams, mind maps, Kanban boards, and star awards, guaranteeing zero downtime and preventing generic fallback misfires.
+- **Robust Normalization**: Automatically normalizes element schemas, calculating bounding dimensions from `x2`/`y2` or aspect ratios when optional fields are omitted.
+- **Progress Orchestration**: Multi-stage progress indicators (`Connecting` $\to$ `Synthesizing vector geometry` $\to$ `Assembling shapes & colors` $\to$ `Finalizing canvas elements`).
 - **Resilience**: Integrated 503 high-demand handling, automatic backoff, and instant user cancelation.
 
 ---

@@ -539,4 +539,58 @@ describe('Canvas Component', () => {
     expect(container.className).toContain('cursor-grabbing');
     fireEvent.keyUp(window, { code: 'Space' });
   });
+
+  it('renders infinite drawing space with overflow: visible on SVG layer', () => {
+    const distantElements: BoardElement[] = [
+      {
+        id: 'distant-rect',
+        type: 'shape',
+        shapeType: 'rectangle',
+        x: -2500,
+        y: -3000,
+        width: 400,
+        height: 300,
+        color: '#2563eb',
+        strokeWidth: 4,
+        opacity: 1,
+        createdAt: 1000,
+        updatedAt: 1000,
+        zIndex: 1,
+      },
+      {
+        id: 'far-right-stroke',
+        type: 'stroke',
+        points: [
+          { x: 8000, y: 9000 },
+          { x: 8100, y: 9100 },
+        ],
+        color: '#dc2626',
+        strokeWidth: 4,
+        opacity: 1,
+        createdAt: 1001,
+        updatedAt: 1001,
+        zIndex: 2,
+      },
+    ];
+
+    render(
+      <Canvas
+        {...defaultProps}
+        elements={distantElements}
+        pan={{ x: 2500, y: 3000 }}
+        zoom={1.5}
+      />
+    );
+
+    const svg = screen.getByTestId('whiteboard-svg');
+    expect(svg).toBeInTheDocument();
+    expect(svg.getAttribute('class')).toContain('overflow-visible');
+    expect(svg.style.overflow).toBe('visible');
+    expect(svg.style.transform).toContain('translate(2500px, 3000px)');
+    expect(svg.style.transform).toContain('scale(1.5)');
+
+    // Elements outside initial boundaries are rendered inside the SVG scene
+    expect(screen.getByTestId('element-distant-rect')).toBeInTheDocument();
+    expect(screen.getByTestId('element-far-right-stroke')).toBeInTheDocument();
+  });
 });

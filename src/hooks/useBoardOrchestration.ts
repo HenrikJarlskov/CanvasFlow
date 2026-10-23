@@ -10,6 +10,7 @@ import { WhiteboardSocket } from '../utils/socket';
 import { cloneElements, createImageElementFromFile } from '../utils/canvasGeometry';
 
 export interface UseBoardOrchestrationParams {
+  initialRoomId?: string;
   elements: BoardElement[];
   setElements: (elements: BoardElement[]) => void;
   resetState: (elements: BoardElement[]) => void;
@@ -22,6 +23,7 @@ export interface UseBoardOrchestrationParams {
 }
 
 export function useBoardOrchestration({
+  initialRoomId,
   elements,
   resetState,
   saveBoard,
@@ -32,6 +34,7 @@ export function useBoardOrchestration({
   zoom,
 }: UseBoardOrchestrationParams) {
   const [roomId] = useState<string>(() => {
+    if (initialRoomId) return initialRoomId;
     try {
       const params = new URLSearchParams(window.location.search);
       const fromUrl = params.get('room');

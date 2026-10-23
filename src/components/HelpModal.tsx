@@ -327,7 +327,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                 return (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl border border-slate-200/80 dark:border-zinc-700/80 bg-slate-50/70 dark:bg-zinc-850/70 hover:bg-white dark:hover:bg-zinc-800 transition-colors shadow-2xs space-y-2"
+                    className="p-4 rounded-xl border border-slate-200/80 dark:border-zinc-700/80 bg-slate-50/80 dark:bg-zinc-800 hover:bg-white dark:hover:bg-zinc-700/80 hover:border-slate-300 dark:hover:border-zinc-600 transition-colors shadow-2xs space-y-2"
                   >
                     <div className="flex items-center gap-2.5">
                       <div className={`p-2 rounded-lg ${feature.color}`}>
@@ -337,7 +337,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                         {feature.title}
                       </h4>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-zinc-200 leading-relaxed font-normal">
+                    <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed font-normal">
                       {feature.description}
                     </p>
                   </div>
@@ -408,7 +408,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
               )}
 
               {/* Shortcuts Table */}
-              <div className="border border-slate-200 dark:border-zinc-700 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-zinc-750">
+              <div className="border border-slate-200 dark:border-zinc-700 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-zinc-700">
                 {filteredShortcuts.length === 0 ? (
                   <div className="p-6 text-center text-xs text-slate-500 dark:text-zinc-300">
                     {t('helpModal.noShortcutsFound')}

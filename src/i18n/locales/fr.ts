@@ -108,6 +108,9 @@ export const fr = {
     undoAria: 'Annuler la dernière action',
     redo: 'Rétablir (Ctrl+Y)',
     redoAria: 'Rétablir la dernière action',
+    moreTools: "Plus d'outils",
+    moreToolsTitle: 'Ouvrir les outils et paramètres supplémentaires',
+    quickSettings: 'Outils et paramètres',
     shapes: {
       menuTitle: 'Formes géométriques (Rectangle, Cercle, Triangle, Ligne, Flèche)',
       menuAria: 'Menu des formes géométriques, actuelle : {{shape}}',
