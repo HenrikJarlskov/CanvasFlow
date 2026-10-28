@@ -44,11 +44,11 @@ describe('ImportModal Component', () => {
 
     // Filter by category
     fireEvent.change(searchInput, { target: { value: '' } });
-    const aiCategoryPill = screen.getByRole('button', { name: 'Business AI' });
+    const aiCategoryPill = screen.getByTestId('category-pill-Business AI');
     fireEvent.click(aiCategoryPill);
 
-    expect(screen.getByText('Generative AI Hub')).toBeInTheDocument();
-    expect(screen.queryByText('SAP Ariba')).not.toBeInTheDocument();
+    expect(screen.getByText('SAP Business AI Platform, ABAP environment')).toBeInTheDocument();
+    expect(screen.queryByText('SAP Audit Log Service')).not.toBeInTheDocument();
   });
 
   it('allows selecting icon size presets and adding an icon to canvas', () => {
@@ -61,6 +61,10 @@ describe('ImportModal Component', () => {
 
     // Click on SAP Integration Suite icon card
     const cpiBtn = screen.getByTestId('btn-add-sap-icon-sap-btp-integration-suite');
+    const iconImg = cpiBtn.querySelector('img');
+    expect(iconImg).not.toBeNull();
+    expect(iconImg?.getAttribute('src')).toMatch(/^data:image\/svg\+xml;base64,/);
+
     fireEvent.click(cpiBtn);
 
     expect(onImportElements).toHaveBeenCalledTimes(1);
@@ -71,7 +75,10 @@ describe('ImportModal Component', () => {
     if (firstItem.type === 'image') {
       expect(firstItem.width).toBe(96);
       expect(firstItem.height).toBe(96);
-      expect(firstItem.src).toContain('data:image/svg+xml');
+      expect(firstItem.src).toMatch(/^data:image\/svg\+xml;base64,/);
+      const b64 = firstItem.src.replace('data:image/svg+xml;base64,', '');
+      const decodedSvg = Buffer.from(b64, 'base64').toString('utf-8');
+      expect(decodedSvg).toContain('<svg');
     }
 
     // Shows added feedback

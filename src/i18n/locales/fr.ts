@@ -185,6 +185,8 @@ export const fr = {
       s5: 'Étoile avec une flèche pointant vers elle',
       s6: 'Tableau Kanban avec À faire, En cours, Terminé',
       s7: 'Robot mignon avec un cœur et une bulle de dialogue',
+      s8: 'Architecture de solution SAP BTP avec Integration Suite, HANA Cloud et S/4HANA',
+      s9: 'Diagramme SAP BTP Niveau 1 avec Utilisateur, Sous-compte et Backend',
     },
   },
   ocrModal: {

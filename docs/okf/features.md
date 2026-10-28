@@ -77,21 +77,21 @@ Auto-snapping is **opt-in** (disabled by default) and togglable via the floating
 
 The Import hub (`src/components/ImportModal.tsx`) provides three content channels:
 
-### 3.1 SAP Architecture Icons
+### 3.1 Full SAP BTP Architecture Icons Library (226 Icons)
 Built directly from the official [SAP BTP Solution Diagrams Guidelines](https://sap.github.io/btp-solution-diagrams/docs/btp_guideline/diagr_comp/icons/):
-- **Domain Categories**: Integration, Database & Analytics, AI, Security, DevOps, Infrastructure, Compute.
-- **Embedded Icons**: SAP Integration Suite, Event Mesh, API Management, SAP HANA Cloud, SAP Datasphere, SAP Analytics Cloud, SAP AI Core, SAP AI Launchpad, Cloud Identity Services, Cloud Foundry Runtime, Kyma Runtime, Private Link, Destination Service, etc.
-- **Search Engine**: Fuzzy keyword search across icon title, description, and category.
-- **Size Selection**: 5 standardized architecture presets:
-  - `S` (32px), `M` (48px), `L` (64px), `XL` (96px), `XXL` (128px).
-- **Placement**: Automatically calculates the center of the current canvas viewport and places the vector icon as a selectable `image` element.
+- **Full 226 Vector Icon Set**:
+  - **100 BTP Services**: Integration Suite (Cloud Integration, API Management, Open Connectors), HANA Cloud, Datasphere, Event Mesh, AI Core, Cloud Identity Services (IAS), Kyma Runtime, Cloud Foundry, Private Link, Destination Service, Document Management, etc.
+  - **126 Generic Architecture Elements**: Architecture Actors (Users, Developers, Admins), Infrastructure & Storage (PostgreSQL, Redis, Object Store), Network & Connectivity (Cloud Connector, Reverse Proxy, Firewalls, Internet Gateway), and Enterprise Systems (S/4HANA Cloud, ERP, SuccessFactors).
+- **Base64 SVG Sanitization**: All 226 SVGs are encoded as compliant `data:image/svg+xml;base64,...` payloads, preventing XML parsing errors or broken browser image previews.
+- **Search & Filter Taxonomy**: Instant fuzzy search across icon title, description, and 10 categories, with category filter tabs and total counts.
+- **Standardized Sizing**: 5 standardized architecture presets: `S` (32px), `M` (48px), `L` (64px), `XL` (96px), `XXL` (128px).
+- **Placement**: Automatically calculates the center of the current canvas viewport and places the vector icon as a selectable `image` element with preserved aspect ratios.
 
 ### 3.2 Draw.io / Diagrams.net Format Parser (`src/utils/drawioParser.ts`)
 - **`<mxlibrary>` Collections**: Decodes embedded JSON arrays containing encoded shapes and SVGs.
 - **`<mxfile>` and `<mxGraphModel>`**: Parses standard XML document structures and extracts `<mxCell>` vertices.
-- **Style String Decoder**: Translates draw.io styling rules:
-  - `fillColor`, `strokeColor`, `strokeWidth`, `rounded`, `opacity`.
-  - Geometric primitives: `shape=ellipse` $\to$ circle, `shape=triangle` $\to$ triangle, `shape=flexArrow` $\to$ arrow.
+- **Style String Decoder**: Translates draw.io styling rules (`fillColor`, `strokeColor`, `strokeWidth`, `rounded`, `opacity`, primitives).
+- **Data URI Semicolon Protection**: Style parser preserves embedded semicolons inside base64 data URIs (`data:image/svg+xml;base64,...`), preventing premature tokenization.
 - **One-Click Demo**: Includes the `SAMPLE_SAP_DRAWIO_LIBRARY` for instant demonstration and verification.
 
 ### 3.3 Miro-Style Image Import
@@ -134,19 +134,25 @@ The collaboration server (`server.ts`) runs on a shared HTTP server port, managi
 
 ---
 
-## 🤖 6. AI Whiteboard Artist (Gemini Flash & Vector Synthesizer)
+## 🤖 6. AI Whiteboard Artist & SAP Architecture Vector Synthesizer
 
 - **Vector Illustration Decomposition**:
-  Translates natural language prompts (e.g. *"cute AI robot smiling with speech bubbles"*, *"Client-Server web architecture"*, *"Mind map of product roadmap"*) into rich, multi-shape vector graphics (8–25 elements).
-  - **Character & Robot Anatomy**: Automatically constructs composite geometry: heads, bodies, circular eyes with pupils, rosy cheeks, smiling mouth lines, antennae, waving limbs, chest display screens, and speech bubbles with custom typography labels.
-  - **Harmonious Color Palette**: Pairs primary border strokes (`#0284c7`, `#2563eb`, `#7c3aed`, `#059669`, `#d97706`) with light pastel fills (`#e0f2fe`, `#dbeafe`, `#ede9fe`, `#d1fae5`, `#fef3c7`, `#ffffff`) for modern, high-contrast whiteboard aesthetics.
+  Translates natural language prompts into rich, multi-shape vector graphics with clean layout and harmonious aesthetics.
+- **High-Precision Vector Geometry**:
+  - **Kanban Board Synthesizer**: Generates 3 strictly aligned orthogonal lanes ("To Do", "In Progress", "Done") with distinct column bounding boxes, inner card containers with uniform padding, and typography labels placed cleanly inside cards without overlapping lines or skewed connectors.
+  - **Mindmap Synthesizer**: Generates orthogonal radial trees with centered central nodes, branch connector lines connecting to node perimeters, and child nodes arranged with geometric non-colliding margins.
+- **Smooth Monotonic Progress Progression**:
+  - Solved the completion anomaly where progress percentages jumped back and forth between 95% and 97%.
+  - Employs a strictly monotonic progression curve in `AiDrawModal.tsx` and server progress streaming, moving smoothly from 0% towards 100% with phase-bound caps.
+- **Official SAP BTP Vector Icon Auto-Enrichment**:
+  - Integrated the full 226-icon SAP BTP database into the backend drawing engine.
+  - Generates authentic vector nodes containing official SAP SVG icons for Integration Suite (CPI), HANA Cloud, API Management, Event Mesh, Cloud Identity Services (IAS), Cloud Connector, and S/4HANA.
+  - Server-side auto-enricher scans generated diagram components and injects the corresponding official SAP SVG vector icon when not already present.
 - **Hierarchical Model Failover**:
-  1. Primary Model: `gemini-3.1-flash-lite` with 12s timeout for sub-second, low-latency JSON vector generation.
+  1. Primary Model: `gemini-3.1-flash-lite` with 12s timeout for sub-second vector generation.
   2. Secondary Failover: `gemini-3.8-flash` for complex reasoning and fallback availability.
-  3. Zero-Downtime Procedural Generator: Instant local synthesis fallback supporting robots, smiling faces, flowcharts, architecture diagrams, mind maps, Kanban boards, and star awards, guaranteeing zero downtime and preventing generic fallback misfires.
-- **Robust Normalization**: Automatically normalizes element schemas, calculating bounding dimensions from `x2`/`y2` or aspect ratios when optional fields are omitted.
-- **Progress Orchestration**: Multi-stage progress indicators (`Connecting` $\to$ `Synthesizing vector geometry` $\to$ `Assembling shapes & colors` $\to$ `Finalizing canvas elements`).
-- **Resilience**: Integrated 503 high-demand handling, automatic backoff, and instant user cancelation.
+  3. Zero-Downtime Procedural Generator: Instant local synthesis fallback supporting SAP BTP solution architectures, Kanban boards, mindmaps, robots, flowcharts, and diagrams.
+- **Schema Tolerance**: Schema supports `type: 'image'`, `iconKey`, and `src` alongside shapes, strokes, and text.
 
 ---
 
@@ -249,5 +255,28 @@ To maximize perceived speed, eliminate main-thread event loop stutter, and adher
   - **Save & New**: Synchronously flushes the active board elements to IndexedDB, localStorage (`aidboard_saved_boards`), and the backend REST API before creating the new whiteboard.
   - **Discard**: Discards uncommitted board drawings from storage and navigates to the new whiteboard.
   - **Cancel**: Closes the dialog and retains the existing canvas state without loss.
+
+---
+
+## 🔐 11. Google Authentication & Multi-Tenant Board Isolation (v2.9.0)
+
+### 11.1 Firebase Authentication Architecture
+- **Authentication Provider**: Firebase Authentication integrating official Google Identity OAuth.
+- **User State Management (`AuthContext.tsx`)**: Reactive user context providing `currentUser`, `loading`, `signInWithGoogle()`, and `signOut()`.
+- **Top-Level Header & Drawer Integration**: Interactive `AuthButton` presenting user profile avatar, display name, and one-click login/logout triggers.
+
+### 11.2 Strict Multi-Tenant Whiteboard Isolation
+- **Per-User Scoped Persistence**: Whiteboards are tagged with immutable `userId` ownership.
+- **Query Scoping**: Board queries (`getDocs(query(collection(db, 'boards'), where('userId', '==', user.uid)))`) restrict results to the authenticated user, preventing unauthorized tenants from accessing private boards.
+- **Offline / Local Storage Scoping**: Offline fallback partitions boards per user identifier (`aidboard_boards_${userId}`).
+
+---
+
+## 🌓 12. Dark Mode High-Contrast Accessibility Hardening (v2.9.0)
+
+### 12.1 Contrast Ratio Verification
+- **Dark Mode Surface & Typography**: Upgraded Help feature guide tiles, OKF tabs, and modal components to use high-contrast surfaces (`dark:bg-zinc-800`, `dark:border-zinc-700/80`) and text pairings (`dark:text-zinc-100` headers and `dark:text-zinc-300` descriptions).
+- **Eliminated Ghost Classes**: Purged unsupported 50-step Tailwind color classes (`dark:bg-zinc-850`) that previously broke CSS compilation and rendered white text over light surfaces.
+- **WCAG AA Compliance**: All documentation and navigation tiles meet or exceed 4.5:1 contrast ratios across both light and dark modes.
 
 

@@ -185,6 +185,8 @@ export const da = {
       s5: 'Stjerne-badge med en pil, der peger på det',
       s6: 'Kanban-tavle med To Do, I gang, Færdig',
       s7: 'Sød robot med et hjerte og taleboble',
+      s8: 'SAP BTP løsningsarkitektur med Integration Suite, HANA Cloud og S/4HANA',
+      s9: 'Level 1 SAP BTP diagram med Bruger, Subaccount og Backend',
     },
   },
   ocrModal: {

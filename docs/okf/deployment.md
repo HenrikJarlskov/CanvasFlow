@@ -20,7 +20,8 @@ This guide outlines the deployment architecture, environment prerequisites, mult
 - **Node.js**: v20.x or v22.x LTS (tested on Node v22.23.2).
 - **Package Manager**: npm v10.x+ or bun v1.1+.
 - **Container Engine** (optional): Docker Engine v24+ and Docker Compose v2.20+.
-- **Database Engine** (production): PostgreSQL 15+ or Google Cloud SQL (PostgreSQL).
+- **Database Engine** (production): Google Cloud Firestore (multi-tenant per-user isolation) or PostgreSQL 15+ / Google Cloud SQL.
+- **Identity Provider**: Firebase Authentication (Google OAuth provider).
 
 ### Environment Variables
 Configure the application environment using `.env` or container orchestration secrets:
@@ -30,7 +31,13 @@ Configure the application environment using `.env` or container orchestration se
 | `PORT` | Optional | `3000` | Port for Express HTTP server and WebSocket server. |
 | `NODE_ENV` | Optional | `development` | Environment mode (`development` or `production`). |
 | `GEMINI_API_KEY` | **Required for AI** | None | Google Gemini API key for AI Whiteboard Artist and Vision OCR. |
-| `SQL_HOST` | Optional | `localhost` | PostgreSQL host for board persistence. |
+| `VITE_FIREBASE_API_KEY` | **Required for Auth** | None | Firebase API key for Google Login authentication. |
+| `VITE_FIREBASE_AUTH_DOMAIN` | **Required for Auth** | None | Firebase Auth domain for OAuth popups. |
+| `VITE_FIREBASE_PROJECT_ID` | **Required for Auth** | None | Google Cloud / Firebase Project ID. |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Optional | None | Cloud Storage bucket. |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Optional | None | FCM Sender ID. |
+| `VITE_FIREBASE_APP_ID` | **Required for Auth** | None | Firebase App ID. |
+| `SQL_HOST` | Optional | `localhost` | PostgreSQL host for board persistence fallback. |
 | `SQL_PORT` | Optional | `5432` | PostgreSQL port. |
 | `SQL_DB_NAME` | Optional | `aidboard` | Database name. |
 | `SQL_USER` | Optional | `postgres` | Database user. |
@@ -180,6 +187,25 @@ server {
 - Never commit `.env` or API credentials to version control.
 - In production, mount secrets via GCP Secret Manager, HashiCorp Vault, or Kubernetes Secrets.
 - Dev server runs with standard user privileges (`node`/`root` inside isolated container).
+
+### 6. Firebase Authentication & Multi-Tenant Board Isolation
+- **Google OAuth Authentication**: Client-side authentication flow using `firebase/auth` and `GoogleAuthProvider`.
+- **Per-User Board Ownership**:
+  - Boards are tagged with immutable `userId` equal to `auth.currentUser.uid`.
+  - Boards list queries enforce `where('userId', '==', currentUser.uid)`, preventing cross-tenant leakage.
+- **Firestore Security Rules**:
+  ```javascript
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /boards/{boardId} {
+        allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+        allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      }
+    }
+  }
+  ```
+- **Local Fallback Isolation**: When running offline or without cloud connection, local storage partitions saved boards per active user ID.
 
 ---
 

@@ -22,6 +22,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
   SAP_ICON_CATEGORIES,
+  SAP_ICON_STATS,
+  SAP_ARCHITECTURE_ICONS,
+  generateDrawioLibraryXml,
   SapArchitectureIcon,
   searchSapIcons,
   getSvgDataUri,
@@ -70,6 +73,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   // SAP Icons state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedType, setSelectedType] = useState<'all' | 'service' | 'generic'>('all');
   const [iconSize, setIconSize] = useState<number>(64);
   const [recentlyAddedId, setRecentlyAddedId] = useState<string | null>(null);
 
@@ -83,10 +87,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const filteredSapIcons = searchSapIcons(searchQuery, selectedCategory);
+  const filteredSapIcons = searchSapIcons(searchQuery, selectedCategory, selectedType);
 
   const handleAddSapIcon = (icon: SapArchitectureIcon) => {
-    const dataUri = getSvgDataUri(icon.svg);
+    const dataUri = getSvgDataUri(icon.dataUri || icon.svg || '');
     const now = Date.now();
     const newElement: BoardElement = {
       id: `sap_icon_${icon.id}_${now}`,
@@ -123,6 +127,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   const handleLoadSampleDrawio = () => {
     setDrawioXml(SAMPLE_SAP_DRAWIO_LIBRARY);
     handleParseDrawio(SAMPLE_SAP_DRAWIO_LIBRARY);
+  };
+
+  const handleLoadBtpServicesDrawio = () => {
+    const serviceIcons = SAP_ARCHITECTURE_ICONS.filter((i) => i.iconType === 'service');
+    const xml = generateDrawioLibraryXml(serviceIcons);
+    setDrawioXml(xml);
+    handleParseDrawio(xml);
+  };
+
+  const handleLoadGenericDrawio = () => {
+    const genericIcons = SAP_ARCHITECTURE_ICONS.filter((i) => i.iconType === 'generic');
+    const xml = generateDrawioLibraryXml(genericIcons);
+    setDrawioXml(xml);
+    handleParseDrawio(xml);
   };
 
   const handleImportParsedDrawio = () => {
@@ -250,50 +268,96 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         {/* Tab 1: SAP Architecture Icons */}
         {activeTab === 'sap-icons' && (
           <div className="flex-1 flex flex-col min-h-0 p-5 gap-4 overflow-hidden">
-            {/* Search & Size Controls */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  data-testid="sap-icon-search-input"
-                  placeholder={t('importModal.searchSapPlaceholder')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-800 dark:text-zinc-100 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-                />
+            {/* Search & Type & Size Controls */}
+            <div className="space-y-2.5 shrink-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    data-testid="sap-icon-search-input"
+                    placeholder={t('importModal.searchSapPlaceholder')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-800 dark:text-zinc-100 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                {/* Icon Size Preset */}
+                <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-zinc-300 self-end sm:self-auto">
+                  <span className="text-[11px] text-slate-600 dark:text-zinc-300 font-medium">{t('importModal.size')}</span>
+                  {[
+                    { label: 'S (48px)', size: 48 },
+                    { label: 'M (64px)', size: 64 },
+                    { label: 'L (96px)', size: 96 },
+                  ].map((s) => (
+                    <button
+                      key={s.size}
+                      type="button"
+                      onClick={() => setIconSize(s.size)}
+                      className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
+                        iconSize === s.size
+                          ? 'bg-indigo-600 text-white font-semibold'
+                          : 'bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-200/50 dark:border-zinc-700/50'
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Icon Size Preset */}
-              <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-zinc-300 self-end sm:self-auto">
-                <span className="text-[11px] text-slate-600 dark:text-zinc-300 font-medium">{t('importModal.size')}</span>
-                {[
-                  { label: 'S (48px)', size: 48 },
-                  { label: 'M (64px)', size: 64 },
-                  { label: 'L (96px)', size: 96 },
-                ].map((s) => (
+              {/* Library Type Selector (All vs Services vs Generic) */}
+              <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-zinc-800 pb-2">
+                <div className="flex items-center gap-1.5">
                   <button
-                    key={s.size}
                     type="button"
-                    onClick={() => setIconSize(s.size)}
-                    className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
-                      iconSize === s.size
-                        ? 'bg-indigo-600 text-white font-semibold'
-                        : 'bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-200/50 dark:border-zinc-700/50'
+                    onClick={() => setSelectedType('all')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      selectedType === 'all'
+                        ? 'bg-indigo-600 text-white font-semibold shadow-2xs'
+                        : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700'
                     }`}
                   >
-                    {s.label}
+                    All Icons ({SAP_ICON_STATS.total})
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedType('service')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      selectedType === 'service'
+                        ? 'bg-blue-600 text-white font-semibold shadow-2xs'
+                        : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700'
+                    }`}
+                  >
+                    BTP Services ({SAP_ICON_STATS.services})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedType('generic')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      selectedType === 'generic'
+                        ? 'bg-slate-700 text-white dark:bg-zinc-600 font-semibold shadow-2xs'
+                        : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700'
+                    }`}
+                  >
+                    Generic Architecture ({SAP_ICON_STATS.generics})
+                  </button>
+                </div>
+
+                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
+                  {filteredSapIcons.length} available
+                </span>
               </div>
             </div>
 
             {/* Category Filter Pills */}
-            <div className="flex items-center flex-wrap gap-1.5 pb-1 shrink-0">
+            <div className="flex items-center flex-wrap gap-1.5 pb-1 shrink-0 max-h-20 overflow-y-auto">
               <button
                 type="button"
+                data-testid="category-pill-All"
                 onClick={() => setSelectedCategory('All')}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                   selectedCategory === 'All'
                     ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-semibold'
                     : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 border border-slate-200/60 dark:border-zinc-700/60 hover:bg-slate-200 dark:hover:bg-zinc-700'
@@ -305,8 +369,9 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 <button
                   key={cat}
                   type="button"
+                  data-testid={`category-pill-${cat}`}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-colors ${
                     selectedCategory === cat
                       ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-semibold'
                       : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 border border-slate-200/60 dark:border-zinc-700/60 hover:bg-slate-200 dark:hover:bg-zinc-700'
@@ -337,16 +402,31 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                       onClick={() => handleAddSapIcon(icon)}
                       className="group relative flex flex-col items-center p-3 rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-white dark:bg-zinc-800/50 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 text-center transition-all cursor-pointer shadow-xs hover:shadow-md"
                     >
-                      <div
-                        className="w-12 h-12 flex items-center justify-center shrink-0 mb-2 transition-transform group-hover:scale-105"
-                        dangerouslySetInnerHTML={{ __html: icon.svg }}
-                      />
+                      <div className="w-12 h-12 flex items-center justify-center shrink-0 mb-1.5 transition-transform group-hover:scale-110">
+                        <img
+                          src={icon.dataUri}
+                          alt={icon.title}
+                          className="w-10 h-10 object-contain drop-shadow-xs pointer-events-none"
+                          loading="lazy"
+                        />
+                      </div>
                       <span className="text-xs font-semibold text-slate-900 dark:text-zinc-100 line-clamp-1">
                         {icon.title}
                       </span>
-                      <span className="text-[10px] text-slate-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
-                        {icon.category}
-                      </span>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span
+                          className={`text-[9px] px-1.5 py-0.2 rounded-full font-medium ${
+                            icon.iconType === 'service'
+                              ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
+                              : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400'
+                          }`}
+                        >
+                          {icon.iconType === 'service' ? 'BTP Service' : 'Generic'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 dark:text-zinc-400 line-clamp-1">
+                          {icon.category}
+                        </span>
+                      </div>
 
                       {/* Add badge or checked indicator */}
                       <div className="mt-2 text-[10px] font-medium inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 opacity-90 group-hover:opacity-100">
@@ -392,15 +472,36 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               <label htmlFor="drawio-xml-input" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                 {t('importModal.pasteDrawioLabel')}
               </label>
-              <button
-                type="button"
-                data-testid="btn-load-sample-drawio"
-                onClick={handleLoadSampleDrawio}
-                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{t('importModal.loadSampleDrawio')}</span>
-              </button>
+              <div className="flex items-center flex-wrap gap-2">
+                <button
+                  type="button"
+                  data-testid="btn-load-sample-drawio"
+                  onClick={handleLoadSampleDrawio}
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  title="Load sample BTP solution architecture"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{t('importModal.loadSampleDrawio')}</span>
+                </button>
+                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                <button
+                  type="button"
+                  onClick={handleLoadBtpServicesDrawio}
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  title="Load full 100 SAP BTP Services draw.io library"
+                >
+                  <span>SAP BTP Services (100)</span>
+                </button>
+                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                <button
+                  type="button"
+                  onClick={handleLoadGenericDrawio}
+                  className="text-xs font-semibold text-slate-600 dark:text-zinc-300 hover:underline flex items-center gap-1 cursor-pointer"
+                  title="Load full 126 SAP Generic Architecture icons draw.io library"
+                >
+                  <span>Generic Icons (126)</span>
+                </button>
+              </div>
             </div>
 
             <textarea

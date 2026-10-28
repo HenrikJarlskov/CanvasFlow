@@ -72,8 +72,8 @@ export const CanvasElementsLayer: React.FC<CanvasElementsLayerProps> = React.mem
         // -------------------------------------------------------------
         if (el.type === 'shape') {
           if (el.shapeType === 'line') {
-            const x2 = el.x2 ?? el.x + el.width;
-            const y2 = el.y2 ?? el.y + el.height;
+            const x2 = el.x2 !== undefined ? el.x2 : el.x + (el.width || 0);
+            const y2 = el.y2 !== undefined ? el.y2 : (el.height > 0 && (!el.width || el.width === 0) ? el.y + el.height : el.y);
             return (
               <line
                 key={el.id}
@@ -90,8 +90,8 @@ export const CanvasElementsLayer: React.FC<CanvasElementsLayerProps> = React.mem
           }
 
           if (el.shapeType === 'arrow') {
-            const x2 = el.x2 ?? el.x + el.width;
-            const y2 = el.y2 ?? el.y + el.height;
+            const x2 = el.x2 !== undefined ? el.x2 : el.x + (el.width || 0);
+            const y2 = el.y2 !== undefined ? el.y2 : (el.height > 0 && (!el.width || el.width === 0) ? el.y + el.height : el.y);
             // Angle calculation for arrowhead geometry
             const angle = Math.atan2(y2 - el.y, x2 - el.x);
             const headlen = Math.max(12, el.strokeWidth * 3.5);
@@ -206,17 +206,21 @@ export const CanvasElementsLayer: React.FC<CanvasElementsLayerProps> = React.mem
         // Embedded Bitmap / SVG Image
         // -------------------------------------------------------------
         if (el.type === 'image') {
+          const src = el.src?.startsWith('data:image/svg+xml,PHN2')
+            ? el.src.replace('data:image/svg+xml,', 'data:image/svg+xml;base64,')
+            : el.src;
           return (
             <image
               key={el.id}
               data-testid={`element-${el.id}`}
-              href={el.src}
+              href={src}
+              xlinkHref={src}
               x={el.x}
               y={el.y}
               width={el.width}
               height={el.height}
               opacity={el.opacity ?? 1}
-              preserveAspectRatio="none"
+              preserveAspectRatio="xMidYMid meet"
               style={{ pointerEvents: 'none' }}
             />
           );

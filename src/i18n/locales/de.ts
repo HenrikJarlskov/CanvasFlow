@@ -185,6 +185,8 @@ export const de = {
       s5: 'Sternabzeichen mit einem Pfeil, der darauf zeigt',
       s6: 'Kanban-Board mit To Do, In Bearbeitung, Erledigt',
       s7: 'Niedlicher Roboter mit Herz und Sprechblase',
+      s8: 'SAP BTP Lösungsarchitektur mit Integration Suite, HANA Cloud und S/4HANA',
+      s9: 'Level 1 SAP BTP Diagramm mit Benutzer, Subaccount und Backend',
     },
   },
   ocrModal: {

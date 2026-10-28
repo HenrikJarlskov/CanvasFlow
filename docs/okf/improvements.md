@@ -76,10 +76,10 @@ The findings below are **sorted strictly by business and technical impact**—fr
   ```
 - **Exploitation Vector:**
   An adversary can connect to `wss://<host>/ws`, iterate numeric or dictionary room IDs (`board_1`, `board_prod`, `finance`), instantly receive the entire proprietary vector canvas, and issue `{ type: 'clear_board' }` to wipe the canvas without authorization. Furthermore, `userId` is generated client-side from `localStorage` (`user_xyz`), allowing arbitrary user impersonation.
-- **Architectural Remedy:**
-  1. Mandate signed Session Tokens / JWTs in the initial WebSocket connection handshake (via `Sec-WebSocket-Protocol` or query token validated against session store).
-  2. Maintain a cryptographic Room Access Control List (ACL) in the database.
-  3. Validate cryptographic nonces to prevent spoofing `userId` or administrative operations (`clear_board`, `rename_board`).
+- **Architectural Remedy & v2.9.0 Remediation Progress:**
+  1. **Board Persistence (Resolved in v2.9.0)**: Persistent board storage is now secured via Firebase Authentication with Google Login. All whiteboard records require `userId == auth.currentUser.uid`, enforced by Cloud Firestore security rules. Unauthenticated or foreign users can no longer enumerate or modify other tenants' boards.
+  2. **WebSocket Handshake Session Verification (Planned Phase 2)**: Mandate signed Session Tokens / JWTs in the initial WebSocket connection handshake (via `Sec-WebSocket-Protocol` or query token validated against session store).
+  3. **Room ACLs**: Maintain a cryptographic Room Access Control List (ACL) in the database to prevent arbitrary room joining.
 
 ---
 

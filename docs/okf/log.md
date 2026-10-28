@@ -7,6 +7,35 @@ This document maintains the operational change log, release milestones, incident
 
 ## 📜 1. Version Release History
 
+### Release v2.9.0 — Google Login Board Isolation, Full 226 SAP Architecture Icons & AI Vector Precision
+- **Google Authentication & Multi-Tenant Whiteboard Isolation**:
+  - Integrated Firebase Authentication with Google Login provider, allowing users to securely sign in via Google.
+  - Eliminated the global shared board exposure where any user could view and edit every other user's saved boards.
+  - Whiteboard persistence now strictly scopes boards by `userId` matching `auth.currentUser.uid`.
+  - Configured Cloud Firestore security rules guaranteeing read, write, and delete permissions strictly to the authenticating user.
+  - Added unit and security test suites in `src/test/FirebaseAuthAndBoardIsolation.test.ts`.
+- **Full SAP BTP Architecture Icons Library (226 Icons)**:
+  - Harvested the complete 226-icon vector suite from official SAP BTP Solution Diagrams repositories (`src/utils/sapIconsAll.json`).
+  - Categorized into 100 BTP Service Icons (Integration Suite, HANA Cloud, Event Mesh, API Management, etc.) and 126 Generic Architecture Icons (Actors, Cloud Connector, Enterprise Systems, Infrastructure).
+  - Standardized all 226 icons to valid base64-encoded SVG data URIs (`data:image/svg+xml;base64,...`).
+  - Updated `drawioParser.ts` style string tokenizer to preserve semicolons inside base64 data URIs.
+  - Enhanced `CanvasElementsLayer.tsx` with dual `href` and `xlinkHref` fallbacks and aspect ratio preservation.
+- **AI Whiteboard Artist & SAP Architecture Icon Integration**:
+  - AI Whiteboard Artist schema updated to support `type: 'image'`, `iconKey`, and `src` attributes.
+  - Added backend SAP vector icon cache in `server.ts` mapping 226 icons with alias keywords.
+  - Implemented automatic server-side SAP architecture enricher that inspects generated diagram nodes and injects official SVG icons for Integration Suite (CPI), HANA Cloud, API Management, Cloud Identity Services, Event Mesh, Cloud Connector, and S/4HANA.
+- **AI Drawing Assistant Geometric Precision (Kanban & Mindmaps)**:
+  - Re-engineered Kanban board vector synthesis to produce 3 strictly aligned orthogonal lanes ("To Do", "In Progress", "Done") with distinct column bounding boxes, padded inner cards, and clean typography placement without overlapping lines or text collisions.
+  - Re-engineered Mindmap vector synthesis to generate orthogonal radial trees with centered nodes, perimeter-docked branch connectors, and non-colliding geometric margins.
+- **Smooth Monotonic AI Drawing Progress**:
+  - Resolved progress bar oscillation where percentages jumped back and forth between 95% and 97% before completing.
+  - Enforced strictly monotonic progression curves with bounded phase limits, ensuring smooth and realistic movement towards 100%.
+- **Dark Mode High-Contrast Accessibility Hardening**:
+  - Audited and updated Help feature guide tiles, OKF tabs, and modal surfaces with high-contrast text and border pairings (`dark:text-zinc-100`, `dark:bg-zinc-800`, `dark:border-zinc-700/80`).
+  - Purged invalid Tailwind classes (`dark:bg-zinc-850`) that broke dark styling and caused white text on light backgrounds.
+- **Automated Test Coverage**:
+  - Expanded test suite to **43 test files and 278 automated passing tests** (>90% coverage), adding `FirebaseAuthAndBoardIsolation.test.ts` and `AiDrawingQuality.test.ts`.
+
 ### Release v2.8.1 — Infinite Drawing Space, Saved Boards Recency Sorting & Responsive Toolbar Overflow Menu
 - **True Infinite Drawing Space Across Full 2D Viewport**:
   - Identified and eliminated SVG bounding box clipping on `<svg data-testid="whiteboard-svg">` by setting both `className="... overflow-visible"` and explicit `style={{ ..., overflow: 'visible' }}`.
@@ -220,20 +249,56 @@ This document maintains the operational change log, release milestones, incident
 
 ### ADR-010: AI Whiteboard Vector Illustration Prompting & Model Failover Architecture
 - **Status**: Accepted
-- **Context**: Users requesting creative illustrations (such as "cute AI robot smiling with speech bubbles", characters, or custom objects) received generic "Step 1 -> Step 2 -> Step 3" flowchart diagrams whenever the model failed to decompose characters into composite shapes or timed out under high-demand network conditions.
+- **Context**: Users requesting creative illustrations received generic flowchart diagrams whenever the model timed out or failed to decompose characters into shapes.
+- **Decision**: Adopt composite vector prompt directives, hierarchical model failover (`gemini-3.1-flash-lite` -> `gemini-3.8-flash`), and semantic procedural fallback templates.
+- **Rationale**: Guarantees rich, modern whiteboard graphics and 100% uptime with zero freezes.
+
+### ADR-011: Firebase User Authentication & Per-User Multi-Tenant Board Isolation
+- **Status**: Accepted
+- **Context**: Whiteboards were historically saved to a shared central store, allowing any user to view, edit, or delete any other user's whiteboards.
 - **Decision**:
-  1. **Composite Vector Decomposition**: Formulate explicit prompt directives instructing Gemini to decompose creative character/object requests into composite vector elements (heads/bodies with pastel fills, circular eyes with pupils, smiling lines/arcs, antennae, waving limbs, and speech bubbles with typography).
-  2. **Hierarchical Model Failover**: Employ `gemini-3.1-flash-lite` (fast, lightweight, high-availability) as primary vector synthesis model with 12s timeout, falling back gracefully to `gemini-3.8-flash`.
-  3. **Zero-Downtime Semantic Procedural Templates**: Extend `generateProceduralDiagram` with specialized templates for robots/AI, smiling avatars/faces, and awards so that even during total network unavailability, the user receives an authentic, adorable vector illustration matching their exact prompt.
-  4. **Schema Tolerance**: Normalize elements across `type` and `shapeType`, auto-calculating `width` and `height` from bounding coordinates or aspect ratios.
+  1. Integrate Firebase Authentication with Google Login provider (`src/firebase.ts`, `AuthContext.tsx`, `AuthButton.tsx`).
+  2. Require board documents to record immutable `userId: auth.currentUser.uid`.
+  3. Restrict board queries to `where('userId', '==', user.uid)`.
+  4. Enforce Cloud Firestore security rules granting read, write, and delete permissions only to the owner matching `request.auth.uid`.
+  5. Partition offline local storage per user (`aidboard_boards_${userId}`).
 - **Rationale**:
-  - Eliminates mismatched flowchart renders for creative illustration prompts.
-  - Generates rich, modern whiteboard graphics with 8-25 coordinated vector shapes and typography labels.
-  - Guarantees 100% uptime with zero freezes or unhandled exceptions.
+  - Delivers complete privacy and security isolation for personal and enterprise whiteboards.
+  - Seamless one-click Google Login UX with persistent session recovery.
+  - Validated with automated unit and security tests in `src/test/FirebaseAuthAndBoardIsolation.test.ts`.
+
+### ADR-012: Official SAP BTP Vector Icon Integration & AI Auto-Enrichment Pipeline
+- **Status**: Accepted
+- **Context**: Architects designing SAP enterprise solutions needed official SAP BTP architecture icons both in the import hub and directly within AI-synthesized architecture diagrams, ensuring brand and architectural consistency.
+- **Decision**:
+  1. Harvest the complete 226-icon library from the official SAP BTP Solution Diagrams repository (`src/utils/sapIconsAll.json`).
+  2. Reformat all 226 SVGs to standard base64 data URIs (`data:image/svg+xml;base64,...`), preventing XML entity escaping collisions and browser image decoding drops.
+  3. Update `drawioParser.ts` style string parsing to preserve semicolons inside base64 data URIs.
+  4. Extend Gemini AI diagram JSON schema with `type: 'image'`, `iconKey`, and `src` attributes.
+  5. Implement backend SAP architecture enricher in `server.ts` that matches component names (Integration Suite, HANA Cloud, API Management, Cloud Identity, Event Mesh, Cloud Connector, S/4HANA) and embeds the official SVG vector icon directly into generated diagram cards.
+- **Rationale**:
+  - Ensures visual fidelity matching official SAP Solution Diagrams guidelines.
+  - Whiteboard users can import from 226 icons or ask the AI assistant to draw SAP architectures and receive official icons automatically.
 
 ---
 
 ## 🔍 3. Incident Post-Mortems & Resolved Anomalies
+
+### Incident INC-2026-10-28-A: AI Whiteboard Artist Progress Oscillation Between 95% and 97%
+- **Summary**: When generating AI diagrams, the progress percentage counter repeatedly fluctuated back and forth between 95% and 97% before abruptly completing.
+- **Root Cause**: Two competing asynchronous progress streams were updating the progress state simultaneously: an interval timer on the client that ticked up to 95%, and simulated progress events from the server stream that repeatedly reported values around 97%, 95%, and 96% due to non-monotonic progress calculations during the final shape validation phase.
+- **Resolution**: Implemented strictly monotonic progress calculation `Math.max(prevProgress, nextProgress)` in `AiDrawModal.tsx` and bounded progress phases on the backend, guaranteeing the percentage moves strictly forwards towards 100%.
+
+### Incident INC-2026-10-28-B: Corrupted SVG Preview Icons in Import Dialog and Blank Canvas Selections
+- **Summary**: In the Import dialog, SAP architecture icons rendered with broken image placeholders, and adding them to the board created blank selection boxes.
+- **Root Cause**:
+  1. The raw JSON icon dataset contained percent-encoded SVGs with bare XML markup that failed browser `<img>` decoding when rendered in Vite/React.
+  2. The Draw.io XML parser split style strings on semicolons (`style.split(';')`), which severed base64 data URIs at the embedded `;base64,` boundary.
+  3. `CanvasElementsLayer.tsx` used only `xlinkHref` without modern SVG2 `href` fallback.
+- **Resolution**:
+  1. Standardized all 226 icons to valid `data:image/svg+xml;base64,...` payloads.
+  2. Updated `parseStyleString` in `drawioParser.ts` with regex that protects semicolons inside data URIs.
+  3. Updated `CanvasElementsLayer.tsx` with dual `href` and `xlinkHref` attributes and `preserveAspectRatio="xMidYMid meet"`. Added automated unit tests in `AiDrawingQuality.test.ts`.
 
 ### Incident INC-2026-10-23-B: Low Contrast on Help Feature Tiles in Dark Mode
 - **Summary**: In dark mode, HelpModal feature guide tiles rendered with white-on-light-grey text, making them illegible until hovered.

@@ -44,7 +44,7 @@ export const OkfViewer: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-600 text-white">
-              OKF Bundle v2.8.1
+              OKF Bundle v2.9.0
             </span>
             <span className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
               Operational Knowledge Framework
@@ -88,9 +88,9 @@ export const OkfViewer: React.FC = () => {
             <div className="text-[10px] text-slate-600 dark:text-zinc-300 font-medium">Automated Tests</div>
             <div className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center justify-center gap-1">
               <CheckCircle2 className="w-3 h-3" />
-              <span>257 / 257 Pass</span>
+              <span>278 / 278 Pass</span>
             </div>
-            <div className="text-[9px] text-slate-500 dark:text-zinc-400">40 suites, &gt;90% cov</div>
+            <div className="text-[9px] text-slate-500 dark:text-zinc-400">43 suites, &gt;90% cov</div>
           </div>
         </div>
       </div>
@@ -212,7 +212,7 @@ export const OkfViewer: React.FC = () => {
                   <span>Deployment & Security</span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-200 leading-relaxed">
-                  Container definitions, prerequisites, CSP, SSL/TLS reverse proxy configurations, and disaster recovery.
+                  Firebase Authentication with Google Login, Firestore per-user isolation, Docker compose, reverse proxy, and CSP.
                 </p>
               </div>
 
@@ -222,7 +222,7 @@ export const OkfViewer: React.FC = () => {
                   <span>Testing & Scalability</span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-200 leading-relaxed">
-                  Full 197-test suite breakdown, 755 req/s HTTP benchmarks, and 60-peer real-time broadcast stress testing.
+                  Full 278-test suite across 43 suites, 755 req/s HTTP benchmarks, and 60-peer real-time broadcast stress testing.
                 </p>
               </div>
 
@@ -232,7 +232,7 @@ export const OkfViewer: React.FC = () => {
                   <span>Technical Features</span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-200 leading-relaxed">
-                  Vector coordinate transforms, RDP auto-snapping, SAP BTP icons, Draw.io XML parser, and live cursors.
+                  Google Auth board isolation, 226 SAP BTP vector icons, clean Kanban & mindmaps, monotonic AI progress, and i18n.
                 </p>
               </div>
 
@@ -242,7 +242,7 @@ export const OkfViewer: React.FC = () => {
                   <span>Operational Log & ADRs</span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-200 leading-relaxed">
-                  Full release history (v1.0 to v2.5), 5 Architectural Decision Records, and incident post-mortems.
+                  Full release history (v1.0 to v2.9.0), 12 Architectural Decision Records (ADR-001 to ADR-012), and incident post-mortems.
                 </p>
               </div>
 
@@ -252,7 +252,7 @@ export const OkfViewer: React.FC = () => {
                   <span>Review & Improvements</span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-200 leading-relaxed">
-                  Full code review by Software Engineer, Architect & Security Expert; findings sorted by impact.
+                  Full code review by Software Engineer, Architect & Security Expert; multi-tenant isolation resolved in v2.9.0.
                 </p>
               </div>
             </div>
@@ -296,6 +296,7 @@ curl -I http://localhost:3000/`}
                 <span>Security Hardening Highlights</span>
               </h5>
               <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-zinc-300 text-xs">
+                <li><strong>Firebase User Authentication:</strong> Google OAuth identity enforcement with per-user Firestore ownership rules (`userId == request.auth.uid`), guaranteeing multi-tenant board privacy.</li>
                 <li><strong>SSL/TLS Termination:</strong> Must be deployed behind TLS 1.3 reverse proxy (Nginx/Cloudflare) supporting WebSocket upgrades.</li>
                 <li><strong>WebSocket Rate Limiting:</strong> Cursor broadcast transmissions throttled to 40ms (~25 Hz) preventing DoS.</li>
                 <li><strong>Input Sanitization:</strong> SVG attributes and XML diagrams sanitized before rendering; strict JSON schema enforcement on AI endpoints.</li>
@@ -405,16 +406,37 @@ curl -I http://localhost:3000/`}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                 <div className="p-2.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
-                  <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">SAP BTP Architecture Icons</div>
+                  <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">226 SAP Architecture Vector Icons</div>
                   <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
-                    Integrated icon library compliant with SAP Solution Diagrams Guidelines with category taxonomy and size presets (32px to 128px).
+                    Complete 226-icon library (100 BTP Services + 126 Generic Architecture) compliant with SAP Solution Diagrams, with base64 SVG sanitization and Draw.io compatibility.
+                  </p>
+                </div>
+
+                <div className="p-2.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
+                  <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">AI Drawing Assistant & SAP Enrichment</div>
+                  <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
+                    Clean vector Kanban columns and aligned mindmap trees with monotonic realistic progress tracking, and automatic injection of official SAP vector icons.
+                  </p>
+                </div>
+
+                <div className="p-2.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
+                  <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">Google Login & Multi-Tenant Board Isolation</div>
+                  <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
+                    Firebase Authentication with Google Login, strictly isolating whiteboards by userId in Cloud Firestore so users only access their own boards.
+                  </p>
+                </div>
+
+                <div className="p-2.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
+                  <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">Dark Mode High-Contrast Accessibility</div>
+                  <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
+                    WCAG AA compliant contrast for Help tiles and dialogs with high-contrast surfaces and crisp typography across all color modes.
                   </p>
                 </div>
 
                 <div className="p-2.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
                   <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">Draw.io XML Parser</div>
                   <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
-                    Client-side translation of &lt;mxlibrary&gt; and &lt;mxGraphModel&gt; documents into native whiteboard vector shapes.
+                    Client-side translation of &lt;mxlibrary&gt; and &lt;mxGraphModel&gt; documents with data URI semicolon protection.
                   </p>
                 </div>
 
@@ -436,13 +458,6 @@ curl -I http://localhost:3000/`}
                   <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">Real-Time Collaborator Cursors</div>
                   <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
                     Sub-40ms throttled pointer tracking with customized user color arrows and username badges.
-                  </p>
-                </div>
-
-                <div className="p-2.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
-                  <div className="font-semibold text-slate-900 dark:text-zinc-100 mb-0.5">Dual-Engine OCR</div>
-                  <p className="text-slate-600 dark:text-zinc-200 text-[11px] leading-relaxed">
-                    Offline in-browser Tesseract.js worker with fallback to Gemini 3.8 Flash Vision AI.
                   </p>
                 </div>
               </div>
@@ -469,7 +484,14 @@ curl -I http://localhost:3000/`}
 
             <div className="space-y-3 text-xs">
               <div className="p-2.5 rounded-lg bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800">
-                <div className="font-semibold text-indigo-700 dark:text-indigo-300">Release v2.8.1 Milestone (Latest)</div>
+                <div className="font-semibold text-indigo-700 dark:text-indigo-300">Release v2.9.0 Milestone (Latest)</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  Firebase Authentication with Google Login and per-user Cloud Firestore board isolation. Full 226 SAP BTP Architecture Icons library with base64 SVG sanitization and Draw.io format compatibility. AI Whiteboard Artist geometric precision (clean Kanban cards & aligned mindmap trees) with smooth monotonic progress tracking and official SAP vector icon auto-enrichment. High-contrast dark mode accessibility.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">Release v2.8.1 Milestone</div>
                 <p className="text-slate-600 dark:text-zinc-300 mt-1">
                   Infinite 2D drawing space with SVG overflow visibility, saved boards list sorted by change date descending (latest changed at top), and responsive toolbar overflow menu for compact and resized windows. Complete i18n parity (EN, FR, DE, DA).
                 </p>
@@ -544,6 +566,20 @@ curl -I http://localhost:3000/`}
                   Established definitive z-index layers: Canvas (z-0), Toolbar (z-20), Header & Dropdown Popovers (relative z-40), Modals & Drawers (z-50), and Notifications (z-[60]). Ensures all header dropdowns float above the toolbar without obstruction.
                 </p>
               </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">ADR-011: Firebase User Authentication & Per-User Multi-Tenant Board Isolation</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  Enforces Google OAuth login and scopes all Cloud Firestore boards strictly to the authenticated user ID (`where('userId', '==', user.uid)` and Firestore security rules), eliminating global board accessibility.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700">
+                <div className="font-semibold text-indigo-600 dark:text-indigo-400">ADR-012: Official SAP BTP Vector Icon Integration & AI Auto-Enrichment</div>
+                <p className="text-slate-600 dark:text-zinc-300 mt-1">
+                  Standardized 226 official SAP BTP Solution Diagrams & Generic Architecture vector icons as base64 SVGs with Draw.io style protection, and added server-side auto-enrichment injecting official icons into AI-generated architecture diagrams.
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -586,7 +622,7 @@ curl -I http://localhost:3000/`}
                     Clients can subscribe to any room and issue <code>clear_board</code> without token validation. Client-generated <code>userId</code> enables arbitrary impersonation.
                   </p>
                   <div className="p-2 bg-white dark:bg-zinc-900 rounded-lg border border-rose-200/60 dark:border-zinc-800 text-[11px] font-mono text-slate-800 dark:text-zinc-200">
-                    Fix: Mandate signed Session Tokens / JWTs in WS handshake and enforce Room ACL checks.
+                    Fix: Mandate signed Session Tokens / JWTs in WS handshake and enforce Room ACL checks. (Note: Persistent board storage is now secured in v2.9.0 via Firebase Auth & per-user Firestore rules).
                   </div>
                 </div>
 

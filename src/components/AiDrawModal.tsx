@@ -27,15 +27,8 @@ interface AiDrawModalProps {
 }
 
 /** Pre-populated prompt ideas for quick user selection */
-const SUGGESTION_KEYS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7'] as const;
+const SUGGESTION_KEYS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9'] as const;
 
-/** Multi-stage visual feedback steps reflecting generation milestones */
-const PROGRESS_STAGES = [
-  { key: 'connecting', percent: 25 },
-  { key: 'synthesizing', percent: 60 },
-  { key: 'assembling', percent: 85 },
-  { key: 'finalizing', percent: 95 },
-] as const;
 
 /**
  * Interactive dialog component for generating structured vector whiteboard diagrams via AI prompts.
@@ -51,8 +44,7 @@ export const AiDrawModal: React.FC<AiDrawModalProps> = ({
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isOverloadedError, setIsOverloadedError] = useState(false);
-  const [progressStageIdx, setProgressStageIdx] = useState(0);
-  const [dynamicPercent, setDynamicPercent] = useState(25);
+  const [dynamicPercent, setDynamicPercent] = useState(15);
 
   const handleCancelOrClose = () => {
     if (isLoading && onCancel) {
@@ -74,36 +66,30 @@ export const AiDrawModal: React.FC<AiDrawModalProps> = ({
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, isLoading]);
 
-  // Cycle progress stages while loading with dynamic progression so it never freezes
+  // Monotonic, realistic progress runner that never oscillates or freezes
   useEffect(() => {
     if (!isLoading) {
-      setProgressStageIdx(0);
-      setDynamicPercent(25);
       return;
     }
 
-    // Step through labeled stages
-    const stageInterval = setInterval(() => {
-      setProgressStageIdx((prev) => {
-        const next = prev < PROGRESS_STAGES.length - 1 ? prev + 1 : prev;
-        setDynamicPercent(PROGRESS_STAGES[next].percent);
-        return next;
-      });
-    }, 1200);
+    setDynamicPercent(18);
 
-    // Dynamic gradual increment after 85% so the bar never appears frozen
-    const tickInterval = setInterval(() => {
+    // Single unified interval that smoothly increases dynamicPercent
+    // Fast initial progression, gradual deceleration near completion, strictly non-decreasing
+    const interval = setInterval(() => {
       setDynamicPercent((curr) => {
-        if (curr >= 85 && curr < 98) {
-          return curr + 2;
-        }
+        if (curr < 35) return curr + 4; // Fast start: connecting
+        if (curr < 65) return curr + 2.5; // Geometry synthesis
+        if (curr < 85) return curr + 1.8; // Assembling elements
+        if (curr < 94) return curr + 0.8; // Finalizing alignment
+        if (curr < 98) return curr + 0.3; // Gentle crawl while waiting
+        if (curr < 99) return curr + 0.1;
         return curr;
       });
-    }, 800);
+    }, 250);
 
     return () => {
-      clearInterval(stageInterval);
-      clearInterval(tickInterval);
+      clearInterval(interval);
     };
   }, [isLoading]);
 
@@ -117,6 +103,7 @@ export const AiDrawModal: React.FC<AiDrawModalProps> = ({
     setIsOverloadedError(false);
     try {
       await onGenerateDrawing(prompt.trim());
+      setDynamicPercent(100);
       setPrompt('');
       onClose();
     } catch (err: any) {
@@ -137,8 +124,17 @@ export const AiDrawModal: React.FC<AiDrawModalProps> = ({
     setPrompt(suggestion);
   };
 
-  const currentStage = PROGRESS_STAGES[progressStageIdx] || PROGRESS_STAGES[0];
-  const currentStageLabel = t(`aiDrawModal.${currentStage.key}`);
+  // Synchronize stage label dynamically with monotonic percent
+  const currentStageKey =
+    dynamicPercent >= 90
+      ? 'finalizing'
+      : dynamicPercent >= 65
+      ? 'assembling'
+      : dynamicPercent >= 35
+      ? 'synthesizing'
+      : 'connecting';
+  const currentStageLabel = t(`aiDrawModal.${currentStageKey}`);
+  const displayPercent = Math.min(100, Math.round(dynamicPercent));
 
   return (
     <div
@@ -208,7 +204,7 @@ export const AiDrawModal: React.FC<AiDrawModalProps> = ({
                   <span>{currentStageLabel}</span>
                 </div>
                 <span className="text-[11px] font-semibold text-violet-600 dark:text-violet-400">
-                  {dynamicPercent}%
+                  {displayPercent}%
                 </span>
               </div>
 
@@ -216,7 +212,7 @@ export const AiDrawModal: React.FC<AiDrawModalProps> = ({
               <div className="w-full bg-violet-200/60 dark:bg-violet-900/60 rounded-full h-1.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-indigo-500 to-violet-600 h-1.5 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${dynamicPercent}%` }}
+                  style={{ width: `${displayPercent}%` }}
                 />
               </div>
 

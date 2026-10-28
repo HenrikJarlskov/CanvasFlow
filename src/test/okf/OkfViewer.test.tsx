@@ -12,7 +12,7 @@ describe('OkfViewer Component', () => {
     expect(screen.getByText('755.3 req/s')).toBeInTheDocument();
     expect(screen.getByText('1.94 ms p95')).toBeInTheDocument();
     expect(screen.getByText('27,675 ops/s')).toBeInTheDocument();
-    expect(screen.getByText('257 / 257 Pass')).toBeInTheDocument();
+    expect(screen.getByText('278 / 278 Pass')).toBeInTheDocument();
   });
 
   it('navigates through all sections and copies file paths', () => {
@@ -43,7 +43,7 @@ describe('OkfViewer Component', () => {
     // Click Features
     fireEvent.click(screen.getByTestId('okf-tab-features'));
     expect(screen.getByText('Technical Features Specification')).toBeInTheDocument();
-    expect(screen.getByText('SAP BTP Architecture Icons')).toBeInTheDocument();
+    expect(screen.getByText(/SAP Architecture Vector Icons/)).toBeInTheDocument();
 
     // Click Log
     fireEvent.click(screen.getByTestId('okf-tab-log'));

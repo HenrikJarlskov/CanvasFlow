@@ -185,6 +185,8 @@ export const en = {
       s5: 'Star badge with an arrow pointing to it',
       s6: 'Kanban board with To Do, In Progress, Done',
       s7: 'Cute robot with heart and speech bubble',
+      s8: 'SAP BTP Solution Architecture with Integration Suite, HANA Cloud and S/4HANA',
+      s9: 'Level 1 SAP BTP diagram with User, Subaccount, and Enterprise Backend',
     },
   },
   ocrModal: {

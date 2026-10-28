@@ -7,17 +7,20 @@ This document provides a comprehensive report of the test suite architecture for
 
 ## 🧪 1. Test Suite Architecture & Verification Matrix
 
-The AIdboard testing framework is built on **Vitest v5.0**, **React Testing Library v16.3**, and **JSDOM v30.1**, executing across 40 modular test files containing 257 automated tests with **>90% code coverage**.
+The AIdboard testing framework is built on **Vitest v5.0**, **React Testing Library v16.3**, and **JSDOM v30.1**, executing across 43 modular test files containing 278 automated tests with **>90% code coverage**.
 
 ### Test Suite Summary Statistics
-- **Total Test Suites**: 40 files
-- **Total Tests**: 257 passing (0 failed, 0 skipped)
+- **Total Test Suites**: 43 files
+- **Total Tests**: 278 passing (0 failed, 0 skipped)
 - **Line & Statement Coverage**: >90% across core modules
-- **Test Categories**: Unit, Component, Layer, Gesture, Security, Architecture, Performance & Caching, and End-to-End (E2E)
+- **Test Categories**: Unit, Component, Layer, Gesture, Security, Architecture, Performance & Caching, AI Quality, Authentication, and End-to-End (E2E)
 
 ### Automated Test Matrix
 | Category | File Path | Tests | Core Behaviors Validated |
 | :--- | :--- | :--- | :--- |
+| **Authentication & Isolation** | `src/test/FirebaseAuthAndBoardIsolation.test.ts` | 3 | Firebase Authentication integration, Google Login provider, per-user board filtering (`userId` isolation), and security rules compliance. |
+| **AI Drawing & Icon Quality** | `src/test/AiDrawingQuality.test.ts` | 8 | Official SAP BTP icon database queries, base64 SVG data URI validity, Kanban column structure without overlapping lines, mindmap radial node alignment, and monotonic progress calculation. |
+| **Toolbar Ergonomics** | `src/test/ColorSelectionAndToolbarCleanup.test.tsx` | 5 | Single-swatch color picker, selection color synchronization, stroke thickness bar popover, and Danish language endonym display. |
 | **Performance & Maintainability** | `src/test/PerformanceAndMaintainability.test.tsx` | 14 | LRU shape detection cache hit/miss, non-blocking `detectShapeAsync`, stroke fingerprinting, offscreen image asset caching & parallel preloading, SVG path reuse, spatial bounding box caching, $O(1)$ AABB fast-rejection for hit-testing, structuredClone element duplication, and modular notification subcomponent rendering. |
 | **i18n & Locales** | `src/test/i18n.test.ts` | 7 | Cross-locale translation, 100% dictionary key parity (en, fr, de, da), dynamic variable interpolation, and fallback resolution. |
 | **End-to-End** | `src/test/ImportAndCollab.e2e.test.tsx` | 3 | Full flow: Header/Toolbar Import modal, SAP Architecture Icon search/drop, Draw.io XML batch loading, local cursor transmission, and live collaborator cursor rendering. |

@@ -74,13 +74,28 @@ export interface DrawioParseResult {
 export function parseStyleString(styleStr: string): Record<string, string> {
   const result: Record<string, string> = {};
   if (!styleStr) return result;
-  const parts = styleStr.split(';');
+
+  // Protect data URIs from premature splitting on semicolon
+  // e.g. image=data:image/svg+xml;base64,...; or image=data:image/svg+xml;utf8,...;
+  const sanitized = styleStr.replace(
+    /(image=data:[^;"]+);(base64|utf8|charset=[^,;"]+),/g,
+    '$1__SEMICOLON__$2,'
+  );
+  const parts = sanitized.split(';');
   for (const part of parts) {
-    const [k, v] = part.split('=');
-    if (k && v !== undefined) {
-      result[k.trim()] = v.trim();
-    } else if (k) {
-      result[k.trim()] = 'true';
+    const restored = part.replace(/__SEMICOLON__/g, ';');
+    const equalIdx = restored.indexOf('=');
+    if (equalIdx !== -1) {
+      const k = restored.slice(0, equalIdx).trim();
+      const v = restored.slice(equalIdx + 1).trim();
+      if (k) {
+        result[k] = v;
+      }
+    } else {
+      const k = restored.trim();
+      if (k) {
+        result[k] = 'true';
+      }
     }
   }
   return result;
@@ -159,6 +174,9 @@ export function parseDrawio(input: string): DrawioParseResult {
         jsonContent = libraryMatch[1].trim();
       }
 
+      // Strip XML comments (e.g. <!-- Foundation Icons -->)
+      jsonContent = jsonContent.replace(/<!--[\s\S]*?-->/g, '');
+
       const parsedArray = JSON.parse(jsonContent);
       if (Array.isArray(parsedArray)) {
         // Iterate through each library entry item
@@ -168,10 +186,30 @@ export function parseDrawio(input: string): DrawioParseResult {
           const h = Math.max(32, Number(entry.h) || 64);
           const rawXml = entry.xml || '';
 
+          // Check if data URI is directly present on entry.data (e.g. official SAP generic icons)
+          if (entry.data && typeof entry.data === 'string') {
+            items.push({
+              id: `drawio_lib_${idx}_${Date.now()}`,
+              title,
+              type: 'image',
+              src: entry.data,
+              width: w,
+              height: h,
+              rawXml,
+            });
+            return;
+          }
+
           // Check for embedded image URI within the style
-          const imageMatch = rawXml.match(/image=([^;"]+)/);
-          if (imageMatch) {
-            const dataUri = decodeURIComponent(imageMatch[1]);
+          const styleAttrMatch = rawXml.match(/style=["']([^"']*)["']/i);
+          const rawStyle = styleAttrMatch ? styleAttrMatch[1] : rawXml;
+          const styleMap = parseStyleString(rawStyle);
+
+          if (styleMap.image) {
+            let dataUri = decodeURIComponent(styleMap.image);
+            if (dataUri.startsWith('data:image/svg+xml,PHN2')) {
+              dataUri = dataUri.replace('data:image/svg+xml,', 'data:image/svg+xml;base64,');
+            }
             items.push({
               id: `drawio_lib_${idx}_${Date.now()}`,
               title,
@@ -333,7 +371,10 @@ export function parseMxGraphModel(xmlString: string, defaultTitle?: string): Dra
 
     // If style contains embedded image URI
     if (styleMap.image) {
-      const src = decodeURIComponent(styleMap.image);
+      let src = decodeURIComponent(styleMap.image);
+      if (src.startsWith('data:image/svg+xml,PHN2')) {
+        src = src.replace('data:image/svg+xml,', 'data:image/svg+xml;base64,');
+      }
       items.push({
         id: `drawio_icon_${id}_${Date.now()}`,
         title: value || defaultTitle || 'Draw.io Icon',
